@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="org.great.mapper.DirectionMapper">
+
+	<insert id="addDirection" parameterType="org.great.entity.Direction">
+	insert into tb_direction(direction_num,direction_time,direction_describe) 
+	values(#{direction_num},#{direction_time},#{direction_describe})
+		<selectKey keyProperty="direction_id" resultType="int" order="AFTER">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<update id="updateDirection" parameterType="org.great.entity.Direction">
+		update tb_direction
+        <set>
+            <if test="direction_num != null">direction_num=#{direction_num},</if>
+            <if test="direction_time != null">direction_time=#{direction_time},</if>
+            <if test="direction_describe != null">direction_describe=#{direction_describe}</if>
+        </set>
+        where direction_id=#{direction_id}
+	</update>
+</mapper>

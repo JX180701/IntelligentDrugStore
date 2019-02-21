@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="org.great.mapper.MenuMapper">
+
+
+
+
+	 <select id="findallmenu" parameterType="org.great.entity.Menu"
+		resultMap="menulist">
+		
+		select * from tb_menu;
+
+	</select>
+	<resultMap type="org.great.entity.Menu" id="menulist">
+		<id property="menu_id" column="menu_id" />
+
+		<result property="menu_pid" column="menu_pid" />
+		<result property="menu_name" column="menu_name" />
+		<result property="menu_url" column="menu_url" />
+
+
+
+	</resultMap>
+
+
+
+
+	  <delete id="deletemenubyid" parameterType="int">
+		delete from tb_menu where menu_id = #{mid}
+	</delete>
+
+	<insert id="insertmenu" parameterType="org.great.entity.Menu">
+		insert into tb_menu(menu_id,menu_pid,menu_name,menu_url) values
+		(#{menu.menu_id},#{menu.menu_pid},#{menu.menu_name},#{menu.menu_url}
+		)
+	</insert>
+
+	<update id="updatemenubyid"
+		parameterType="org.great.entity.Menu">
+		update tb_menu set
+		menu_pid=#{menu_pid},menu_name=#{menu_name},menu_url=#{menu_url}
+		where menu_id = #{menu_id}
+	</update>
+
+
+	<select id="findmenuinfo" parameterType="int"
+		resultMap="menuinfo">
+
+		select * from tb_menu
+		where menu_id = #{mid}
+
+
+
+	</select>
+	<resultMap type="org.great.entity.Menu" id="menuinfo">
+		<id property="menu_id" column="menu_id" />
+
+		<result property="menu_pid" column="menu_pid" />
+		<result property="menu_name" column="menu_name" />
+		<result property="menu_url" column="menu_url" />
+
+
+		<!-- <association property="role" column="role_id" javaType="org.great.entity.Role"> 
+			<id property="role_id" column="role_id" /> <result property="role_name" column="role_name" 
+			/> </association> -->
+
+	</resultMap>
+
+
+
+
+
+	<select id="specificfind" parameterType="org.great.entity.Menu"
+		resultMap="menudetail">
+
+		select tm.menu_pid,tm.menu_name,tm.menu_url from tb_menu tm
+		where menu_id =
+		#{mid}
+
+         <where>
+		   <if test = "menu_id!=null and menu_id!=''">
+		       and tb_menu.menu_id like "#{menu_id}"
+		   </if>
+		   
+		   <if test = "menu_pid!=null and menu_pid!=''">
+		       and tb_menu.menu_pid like "#{menu_pid}"
+		   </if>
+		
+		   
+		   <if test = "menu_name!=null and menu_name!=''">
+		       and tb_menu.menu_name like "#{menu_name}"
+		   </if>
+		   
+		     <if test = "menu_url!=null and menu_url!=''">
+		       and tb_menu.menu_url like "#{menu_url}"
+		   </if>
+		  
+		  
+		  
+		  
+		  
+	  </where> 
+       
+
+
+
+
+
+	</select>
+	<resultMap type="org.great.entity.Menu" id="menudetail">
+		<id property="menu_id" column="menu_id" />
+
+		<result property="menu_pid" column="menu_pid" />
+		<result property="menu_name" column="menu_name" />
+		<result property="menu_url" column="menu_url" />
+
+
+
+		<!-- <association property="role" column="role_id" javaType="org.great.entity.Role"> 
+			<id property="role_id" column="role_id" /> <result property="role_name" column="role_name" 
+			/> </association> -->
+
+	</resultMap> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+ 
+</mapper>
+	

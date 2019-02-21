@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="org.great.mapper.ParaMapper">
+
+
+
+
+	 <select id="findallpara" parameterType="org.great.entity.Para"
+		resultMap="paralist">
+		
+		select * from tb_para;
+
+	</select>
+	<resultMap type="org.great.entity.Para" id="paralist">
+		<id property="para_id" column="para_id" />
+
+		<result property="para_pid" column="para_pid" />
+		<result property="para_name" column="para_name" />
+		<result property="para_value" column="para_value" />
+
+
+
+	</resultMap>
+
+
+
+
+	  <delete id="deleteparabyid" parameterType="int">
+		delete from tb_para where para_id = #{pid}
+	</delete>
+
+	<insert id="insertpara" parameterType="org.great.entity.Para">
+		insert into tb_para(para_id,para_pid,para_name,para_value) values
+		(#{para.para_id},#{para.para_pid},
+		#{para.para_name},#{para.para_value})
+	</insert>
+
+	<update id="updateparabyid"
+		parameterType="org.great.entity.Para">
+		update tb_para set
+		para_pid=#{para_pid},para_name=#{para_name},para_value=#{para_value}
+		where para_id = #{para_id}
+	</update>
+
+
+	<select id="findparainfo" parameterType="int"
+		resultMap="parainfo">
+
+		select * from tb_para
+		where para_id = #{pid}
+
+
+
+	</select>
+	<resultMap type="org.great.entity.Para" id="parainfo">
+		<id property="para_id" column="para_id" />
+
+		<result property="para_pid" column="para_pid" />
+		<result property="para_name" column="para_name" />
+		<result property="para_value" column="para_value" />
+
+
+		<!-- <association property="role" column="role_id" javaType="org.great.entity.Role"> 
+			<id property="role_id" column="role_id" /> <result property="role_name" column="role_name" 
+			/> </association> -->
+
+	</resultMap>
+
+
+
+
+
+	<select id="specificfind" parameterType="org.great.entity.Para"
+		resultMap="paradetail">
+
+		select tp.para_pid,tp.para_name,tp.para_value from tb_para tp
+		where para_id =
+		#{pid}
+
+         <where>
+		   <if test = "para_id!=null and para_id!=''">
+		       and tb_para.para_id like "#{para_id}"
+		   </if>
+		   
+		   <if test = "para_pid!=null and para_pid!=''">
+		       and tb_para.para_pid like "#{para_pid}"
+		   </if>
+		
+		   
+		   <if test = "para_name!=null and para_name!=''">
+		       and tb_para.para_name like "#{para_name}"
+		   </if>
+		   
+		     <if test = "para_value!=null and para_value!=''">
+		       and tb_para.para_value like "#{para_value}"
+		   </if>
+		  
+		  
+		  
+		  
+		  
+	  </where> 
+       
+
+
+
+
+
+	</select>
+	<resultMap type="org.great.entity.Para" id="paradetail">
+		<id property="para_id" column="para_id" />
+
+		<result property="para_pid" column="para_pid" />
+		<result property="para_name" column="para_name" />
+		<result property="para_value" column="para_value" />
+
+
+
+		<!-- <association property="role" column="role_id" javaType="org.great.entity.Role"> 
+			<id property="role_id" column="role_id" /> <result property="role_name" column="role_name" 
+			/> </association> -->
+
+	</resultMap> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+ 
+</mapper>
+	

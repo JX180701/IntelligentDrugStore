@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="org.great.mapper.TabooMapper">
+
+	<insert id="addTaboo" parameterType="org.great.entity.Taboo">
+		insert into tb_taboo
+		(drug_id1,drug_id2,taboo_discribe)
+		values(#{drug_id1},#{drug_id2},#{taboo_discribe})
+	</insert>
+
+	<select id="findAllTaboo" resultMap="tabooList">
+		select * from tb_taboo
+	</select>
+	<resultMap type="org.great.entity.Taboo" id="tabooList">
+		<result property="drug_id1" column="drug_id1" />
+		<result property="drug_id2" column="drug_id2" />
+		<result property="taboo_discribe" column="taboo_discribe" />
+	</resultMap>
+
+	<select id="findByDiscribe" parameterType="String" resultType="org.great.entity.Taboo">
+		select * from tb_taboo where taboo_discribe = #{taboo_discribe}
+	</select>
+
+	<update id="updateTaboo" parameterType="org.great.entity.Taboo">
+		update tb_taboo
+		<set>
+			<if test="taboo_discribe != null">taboo_discribe=#{taboo_discribe}</if>
+		</set>
+		where drug_id1 = #{drug_id1} and drug_id2 = #{drug_id2}
+	</update>
+
+	<select id="findByOption" parameterType="org.great.entity.Taboo"
+		resultType="org.great.entity.Taboo">
+		select * from tb_taboo
+		<where>
+			<if test="drug_id1 != null">
+				and (drug_id1 = #{drug_id1} or drug_id1 = #{drug_id2})
+			</if>
+			<if test="drug_id2 != null">
+				and (drug_id2 = #{drug_id2} or drug_id2 = #{drug_id1})
+			</if>
+		</where>
+	</select>
+
+	<delete id="deleteTaboo" parameterType="org.great.entity.Taboo">
+		delete from tb_taboo
+		where drug_id1 = #{drug_id1} and drug_id2 = #{drug_id2}
+	</delete>
+
+	<select id="searchConditionTaboo" parameterType="int"
+		resultMap="tabooList">
+		select * from tb_taboo where drug_id1 = #{drug_id} or
+		drug_id2 = #{drug_id}
+	</select>
+
+	<select id="showTaboo" resultType="org.great.entity.Taboo">
+		select * from tb_taboo where
+		drug_id1=#{id} or drug_id2=#{id}
+	</select>
+</mapper>
+	

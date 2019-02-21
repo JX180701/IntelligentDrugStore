@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="org.great.mapper.DrugStoreMapper">
+
+
+	<select id="getDrugStoreInventory"
+		resultMap="drugStoreInventoryList">
+		select a.*,b.drug_name1,b.drug_unit1,b.drug_unit2
+		from(select * from tb_drugstore)a left join tb_drug b on
+		a.drug_id=b.drug_id
+	</select>
+	<resultMap type="org.great.entity.DrugStore"
+		id="drugStoreInventoryList">
+		<id property="drugstore_id" column="drugstore_id" />
+		<result property="drug_id" column="drug_id" />
+		<result property="batch" column="batch" />
+		<result property="validity" column="validity" />
+		<result property="drugstore_num" column="drugstore_num" />
+		<result property="drugstore_threshold" column="drugstore_threshold" />
+		<result property="drugstore_state" column="drugstore_state" />
+		<association property="drug"
+			javaType="org.great.entity.Drug">
+			<id property="drug_id" column="drug_id" />
+			<result property="drug_name1" column="drug_name1" />
+			<result property="drug_unit1" column="drug_unit1" />
+			<result property="drug_unit2" column="drug_unit2" />
+		</association>
+	</resultMap>
+
+	<select id="getPsychotropicDrugStoreInventory"
+		resultMap="psychotropicDrugStoreInventoryList">
+		select a.*,b.drug_name1,b.drug_unit1,b.drug_unit2
+		from(select * from tb_drugstore)a left join tb_drug b on
+		a.drug_id=b.drug_id and b.drug_special='yes'
+	</select>
+	<resultMap type="org.great.entity.DrugStore"
+		id="psychotropicDrugStoreInventoryList">
+		<id property="drugstore_id" column="drugstore_id" />
+		<result property="drug_id" column="drug_id" />
+		<result property="batch" column="batch" />
+		<result property="validity" column="validity" />
+		<result property="drugstore_num" column="drugstore_num" />
+		<result property="drugstore_state" column="drugstore_state" />
+		<association property="drug"
+			javaType="org.great.entity.Drug">
+			<id property="drug_id" column="drug_id" />
+			<result property="drug_name1" column="drug_name1" />
+			<result property="drug_unit1" column="drug_unit1" />
+			<result property="drug_unit2" column="drug_unit2" />
+		</association>
+	</resultMap>
+
+	<select id="findDrugStore"
+		resultType="org.great.entity.DrugStore" resultMap="drugstoreList">
+
+		select * from tb_drugstore s left join tb_drug d on d.drug_id=s.drug_id
+
+	</select>
+
+	<resultMap id="drugstoreList"
+		type="org.great.entity.DrugStore">
+
+		<id property="drugstore_id" column="drugstore_id" />
+		<result property="drug_id" column="drug_id" />
+		<result property="purchase_id" column="purchase_id" />
+		<result property="batch" column="batch" />
+		<result property="validity" column="validity" />
+		<result property="drugstore_num" column="drugstore_num" />
+		<result property="drugstore_balance" column="drugstore_balance" />
+		<result property="drugstore_threshold"
+			column="drugstore_threshold" />
+		<result property="drugstore_state" column="drugstore_state" />
+
+		<association property="drug"
+			javaType="org.great.entity.Drug">
+			<id property="drug_id" column="drug_id" />
+			<result property="drug_name1" column="drug_name1" />
+
+		</association>
+	</resultMap>
+
+	<select id="condDrugStore"
+		resultType="org.great.entity.DrugStore" resultMap="drugstoreList"
+		parameterType="java.util.Map">
+
+		select * from tb_drugstore s left join tb_drug d on
+		d.drug_id=s.drug_id where 1=1
+
+		<if test="drug!=0 ">
+			and s.drug_id =#{drug}
+		</if>
+		<if test="batch!='0'.toString() ">
+			and s.batch =#{batch}
+		</if>
+
+		<if test="drugname!='' ">
+			and d.drug_name1 =#{drugname}
+		</if>
+
+		<if test="expiration!='' ">
+			and
+			str_to_date(validity, '%Y-%m-%d') BETWEEN str_to_date('1970-01-01', '%Y-%m-%d') AND
+			str_to_date(#{expiration}, '%Y-%m-%d')
+			ORDER BY str_to_date(validity, '%Y-%m-%d')
+		</if>
+
+	</select>
+
+	<select id="findDrugStoreById"
+		resultType="org.great.entity.DrugStore">
+
+		select * from tb_drugstore where drug_id=#{id}
+		ORDER BY validity ASC
+	</select>
+	
+	<select id="selectExpire"
+		resultType="org.great.entity.DrugStore">
+
+		select * from tb_drugstore where 
+		str_to_date(validity, '%Y-%m-%d') BETWEEN str_to_date('1970-01-01', '%Y-%m-%d') AND
+			str_to_date(#{date}, '%Y-%m-%d')
+		ORDER BY validity ASC
+	</select>
+	
+	<update id="changeState">
+		update tb_drugstore set drugstore_state= #{1} where batch = #{0}
+	</update>
+	
+	<update id="updateNum">
+		update tb_drugstore set drugstore_num= #{1} , drugstore_balance=#{2} where batch = #{0}
+	</update>
+
+	<update id="distributeDrug">
+		update tb_drugstore set drugstore_num= #{1}   where batch = #{0}
+	</update>
+	
+	<update id="setThresholdById">
+		update tb_drugstore set
+		drugstore_threshold= #{1} where drugstore_id = #{0}
+	</update>
+
+	<select id="findDrugStoreByDrugNameAndBatch"
+		parameterType="org.great.entity.DrugStore" resultMap="DrugStoreMap">
+		select * from (select * from tb_drugstore
+		<where>
+			<if test="drug_id != null">
+				drug_id=#{drug_id}
+			</if>
+			<if test="batch != null">
+				and batch=#{batch}
+			</if>
+		</where>
+		) li left join tb_purchase p on p.purchase_id = li.purchase_id
+		left
+		join tb_user u on p.user_id = u.user_id
+		left join tb_drug d on
+		p.drug_id = d.drug_id
+		left join tb_role r on u.role_id = r.role_id
+		left
+		join tb_direction di on d.direction_id = di.direction_id
+		left join
+		tb_price pr on d.price_id = pr.price_id
+		left join tb_type ty on
+		d.type_id = ty.type_id
+	</select>
+
+	<resultMap type="org.great.entity.DrugStore"
+		id="DrugStoreMap">
+		<id property="drugstore_id" column="drugstore_id" />
+		<result property="drug_id" column="drug_id" />
+		<result property="purchase_id" column="purchase_id" />
+		<result property="validity" column="validity" />
+		<result property="library_num" column="library_num" />
+		<result property="library_threshold" column="library_threshold" />
+		<result property="library_state" column="library_state" />
+		<result property="batch" column="batch" />
+
+		<association property="drug"
+			javaType="org.great.entity.Drug">
+			<id property="drug_id" column="drug_id" />
+			<result property="drug_name1" column="drug_name1" />
+			<result property="drug_name2" column="drug_name2" />
+			<result property="drug_unsalable" column="drug_unsalable" />
+			<result property="drug_standard" column="drug_standard" />
+			<result property="drug_dosage" column="drug_dosage" />
+			<result property="drug_unit1" column="drug_unit1" />
+			<result property="drug_unit2" column="drug_unit2" />
+			<result property="drug_formula" column="drug_formula" />
+			<result property="drug_special" column="drug_special" />
+			<result property="drug_antibiotic" column="drug_antibiotic" />
+			<result property="drug_antibiotic" column="drug_insurance" />
+			<result property="drug_state" column="drug_state" />
+			<result property="direction_id" column="direction_id" />
+			<result property="price_id" column="price_id" />
+			<result property="type_id" column="type_id" />
+
+			<association property="direction"
+				javaType="org.great.entity.Direction">
+				<id property="direction_id" column="direction_id" />
+				<result property="direction_num" column="direction_num" />
+				<result property="direction_time" column="direction_time" />
+				<result property="direction_describe"
+					column="direction_describe" />
+			</association>
+
+			<association property="price"
+				javaType="org.great.entity.Price">
+				<id property="price_id" column="price_id" />
+				<result property="price_cost" column="price_cost" />
+				<result property="price_retail" column="price_retail" />
+				<result property="price_ratio" column="price_ratio" />
+				<result property="price_floor" column="price_floor" />
+				<result property="price_invoice" column="price_invoice" />
+				<result property="price_settle" column="price_settle" />
+			</association>
+
+			<association property="type"
+				javaType="org.great.entity.Type">
+				<id property="type_id" column="type_id" />
+				<result property="type_pid" column="type_pid" />
+				<result property="type_name" column="type_name" />
+			</association>
+		</association>
+		<association property="purchase"
+			javaType="org.great.entity.Purchase">
+			<id property="purchase_id" column="purchase_id" />
+			<result property="drug_id" column="drug_id" />
+			<result property="user_id" column="user_id" />
+			<result property="purchase_supplier"
+				column="purchase_supplier" />
+			<result property="purchase_num" column="purchase_num" />
+			<result property="purchase_price" column="purchase_price" />
+			<result property="purchase_date" column="purchase_date" />
+
+			<association property="user"
+				javaType="org.great.entity.User">
+				<id property="user_id" column="user_id" />
+				<result property="user_name" column="user_name" />
+				<result property="user_pwd" column="user_pwd" />
+				<result property="role_id" column="role_id" />
+				<result property="user_state" column="user_state" />
+				<result property="user_date" column="user_date" />
+				<result property="user_account" column="user_account" />
+
+				<association property="role"
+					javaType="org.great.entity.Role">
+					<id property="role_id" column="role_id" />
+					<result property="role_name" column="role_name" />
+				</association>
+			</association>
+
+			<association property="drug"
+				javaType="org.great.entity.Drug">
+				<id property="drug_id" column="drug_id" />
+				<result property="drug_name1" column="drug_name1" />
+				<result property="drug_name2" column="drug_name2" />
+				<result property="drug_unsalable" column="drug_unsalable" />
+				<result property="drug_standard" column="drug_standard" />
+				<result property="drug_dosage" column="drug_dosage" />
+				<result property="drug_unit1" column="drug_unit1" />
+				<result property="drug_unit2" column="drug_unit2" />
+				<result property="drug_formula" column="drug_formula" />
+				<result property="drug_special" column="drug_special" />
+				<result property="drug_antibiotic" column="drug_antibiotic" />
+				<result property="drug_antibiotic" column="drug_insurance" />
+				<result property="drug_state" column="drug_state" />
+				<result property="direction_id" column="direction_id" />
+				<result property="price_id" column="price_id" />
+				<result property="type_id" column="type_id" />
+
+				<association property="direction"
+					javaType="org.great.entity.Direction">
+					<id property="direction_id" column="direction_id" />
+					<result property="direction_num" column="direction_num" />
+					<result property="direction_time" column="direction_time" />
+					<result property="direction_describe"
+						column="direction_describe" />
+				</association>
+
+				<association property="price"
+					javaType="org.great.entity.Price">
+					<id property="price_id" column="price_id" />
+					<result property="price_cost" column="price_cost" />
+					<result property="price_retail" column="price_retail" />
+					<result property="price_ratio" column="price_ratio" />
+					<result property="price_floor" column="price_floor" />
+					<result property="price_invoice" column="price_invoice" />
+					<result property="price_settle" column="price_settle" />
+				</association>
+
+				<association property="type"
+					javaType="org.great.entity.Type">
+					<id property="type_id" column="type_id" />
+					<result property="type_pid" column="type_pid" />
+					<result property="type_name" column="type_name" />
+				</association>
+			</association>
+		</association>
+	</resultMap>
+
+	<update id="updateDrugStoreNum"
+		parameterType="org.great.entity.DrugStore">
+		update tb_drugstore set drugstore_num=#{drugstore_num}
+		where drugstore_id=#{drugstore_id}
+	</update>
+
+	<insert id="addDrugStore"
+		parameterType="org.great.entity.DrugStore">
+		insert into tb_drugstore
+		(drug_id,purchase_id,batch,validity,drugstore_num,drugstore_threshold,drugstore_state)
+		values(#{drug_id,jdbcType=INTEGER},#{purchase_id,jdbcType=INTEGER},#{batch,jdbcType=VARCHAR},#{validity,jdbcType=VARCHAR},#{drugstore_num,jdbcType=VARCHAR},#{drugstore_threshold,jdbcType=VARCHAR},#{drugstore_state,jdbcType=VARCHAR})
+	</insert>
+
+	<select id="findDrugStoreByDrugId" resultType="org.great.entity.DrugStore" resultMap="thresholdList">
+		select * from tb_drugstore where drug_id=#{drug_id}
+	</select>
+
+	<resultMap id="thresholdList" type="org.great.entity.DrugStore">
+		<id property="drugstore_id" column="drugstore_id" />
+		<result property="drug_id" column="drug_id" />
+		<result property="purchase_id" column="purchase_id" />
+		<result property="batch" column="batch" />
+		<result property="validity" column="validity" />
+		<result property="drugstore_num" column="drugstore_num" />
+		<result property="drugstore_balance" column="drugstore_balance" />
+		<result property="drugstore_threshold" column="drugstore_threshold" />
+		<result property="drugstore_state" column="drugstore_state" />
+	</resultMap>
+</mapper>

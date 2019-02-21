@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="org.great.mapper.LogMapper">
+	<insert id="addLog" parameterType="org.great.entity.Log">
+		insert into
+		tb_log(user_id,log_thing,log_date)
+		values(#{user_id},#{log_thing},#{log_date})
+	</insert>
+
+	<select id="findAllLog" resultMap="logList">
+		select * from tb_log left join
+		tb_user on tb_log.user_id = tb_user.user_id
+	</select>
+	<resultMap type="org.great.entity.Log" id="logList">
+		<id property="log_id" column="log_id" />
+		<result property="user_id" column="user_id" />
+		<result property="log_thing" column="log_thing" />
+		<result property="log_date" column="log_date" />
+		<association property="user"
+			javaType="org.great.entity.User">
+			<id property="user_id" column="user_id" />
+			<result property="user_name" column="user_name" />
+		</association>
+	</resultMap>
+
+	<select id="findByDate" resultMap="logList" parameterType="hashmap">
+		select * from (select * from
+		tb_log
+		<where>
+			<if test="date1 != null">
+				log_date &gt;= #{date1}
+			</if>
+			<if test="date2 != null">
+				and log_date &lt;= #{date2}
+			</if>
+		</where>
+		) li left join tb_user on li.user_id = tb_user.user_id
+	</select>
+</mapper>

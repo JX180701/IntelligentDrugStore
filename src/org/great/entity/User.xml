@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="org.great.mapper.UserMapper">
+
+	<select id="findByUserNameAndPassword"
+		parameterType="org.great.entity.User"
+		resultType="org.great.entity.User">
+		select * from tb_user where user_account=#{user_account} and
+		user_pwd = #{user_pwd}
+
+	</select>
+	<select id="getRoleIdByUserId"
+		parameterType="org.great.entity.User" resultType="int">
+		select role_id from
+		tb_user where user_id=#{user_id}
+	</select>
+	
+	<select id="findUser"
+		parameterType="org.great.entity.User" resultType="org.great.entity.User">
+		select * from tb_user where user_account=#{user_account}
+	</select>
+
+	<select id="findalluser" parameterType="org.great.entity.User"
+		resultMap="userlist">
+		<!-- tbro.role_name,tbus.user_id,tbus.user_name,tbus.user_pwd,tbus.user_state,tbus.user_date,tbus.user_account -->
+		select * from tb_user tbus,tb_role tbro
+		where tbro.role_id = tbus.role_id;
+
+	</select>
+	<resultMap type="org.great.entity.User" id="userlist">
+		<id property="user_id" column="user_id" />
+
+		<result property="user_name" column="user_name" />
+		<result property="user_pwd" column="user_pwd" />
+		<!-- <result property="role_id" column="role.role_id"/> -->
+		<result property="user_state" column="user_state" />
+		<result property="user_date" column="user_date" />
+		<result property="user_account" column="user_account" />
+
+		<association property="role" column="role_id"
+			javaType="org.great.entity.Role">
+			<id property="role_id" column="role_id" />
+			<result property="role_name" column="role_name" />
+
+		</association>
+
+	</resultMap>
+
+
+	<insert id="insertuser" parameterType="org.great.entity.User">
+		insert into
+		tb_user(user_name,user_pwd,role_id,user_state,user_date,user_account)
+		values
+		(#{user.user_name},#{user.user_pwd},#{user.role_id},#{user.user_state}
+		,#{user.user_date},#{user.user_account})
+	</insert>
+
+	<!-- <update id="updateuserbyid" parameterType="com.loger.entity.User" resultType="java.lang.Boolean"> 
+		<![CDATA[ update user set user_name=#{uname},upwd=#{upwd} where user_id=#{uid}]]> 
+		</update> -->
+		
+		
+
+	<select id="finduserinfo" parameterType="int"
+		resultMap="userinfo">
+
+		<!-- select * from tb_user where user_id = #{uid} -->
+
+		select a.*,b.* from tb_user a left join tb_role b
+		on a.role_id=b.role_id where user_id=#{uid}
+
+	</select>
+	<resultMap type="org.great.entity.User" id="userinfo">
+		<id property="user_id" column="user_id" />
+
+		<result property="user_name" column="user_name" />
+		<result property="user_pwd" column="user_pwd" />
+		<result property="role_id" column="role.role_id" />
+		<result property="user_state" column="user_state" />
+		<result property="user_date" column="user_date" />
+		<result property="user_account" column="user_account" />
+
+		<association property="role" column="role_id"
+			javaType="org.great.entity.Role">
+			<id property="role_id" column="role_id" />
+			<result property="role_name" column="role_name" />
+
+		</association>
+
+	</resultMap>
+
+
+
+
+	<select id="specificfind" parameterType="org.great.entity.User"
+		resultMap="userdetail">
+
+		<!-- select * from tb_user where user_id = #{uid} -->
+
+		select tb_role.role_name,tb_user.user_name,tb_user.user_state from
+		tb_user left join tb_role
+		on tb_user.role_id = tb_role.role_id
+
+		<where>
+			<if test="user_name!=null and user_name!=''">
+				and tb_user.user_name like "#{user_name}"
+			</if>
+
+			<if test="user_state!=null and user_state!=''">
+				and tb_user.user_state like "#{user_state}"
+			</if>
+
+
+			<if test="role.role_name!=null and role.role_name!=''">
+				and tb_role.role_name like "#{role_name}"
+			</if>
+		</where>
+
+	</select>
+	<resultMap type="org.great.entity.User" id="userdetail">
+		<id property="user_id" column="user_id" />
+
+		<result property="user_name" column="user_name" />
+		<result property="user_pwd" column="user_pwd" />
+		<result property="role_id" column="role.role_id" />
+		<result property="user_state" column="user_state" />
+		<result property="user_date" column="user_date" />
+		<result property="user_account" column="user_account" />
+
+		<association property="role" column="role_id"
+			javaType="org.great.entity.Role">
+			<id property="role_id" column="role_id" />
+			<result property="role_name" column="role_name" />
+
+		</association>
+
+	</resultMap>
+
+
+
+
+	<select id="finduseraut" parameterType="org.great.entity.User"
+		resultMap="useraut">
+		<!-- tbro.role_name,tbus.user_id,tbus.user_name,tbus.user_pwd,tbus.user_state,tbus.user_date,tbus.user_account -->
+		select * from tb_user tbus,tb_role tbro
+		where tbro.role_id = tbus.role_id;
+
+
+	</select>
+	<resultMap type="org.great.entity.User" id="useraut">
+		<id property="user_id" column="user_id" />
+
+		<result property="user_name" column="user_name" />
+		<result property="user_pwd" column="user_pwd" />
+
+		<result property="user_state" column="user_state" />
+		<result property="user_date" column="user_date" />
+		<result property="user_account" column="user_account" />
+
+		<association property="role" column="role_id"
+			javaType="org.great.entity.Role">
+			<id property="role_id" column="role_id" />
+			<result property="role_name" column="role_name" />
+
+		</association>
+
+	</resultMap>
+
+	<update id="updateUserDate" parameterType="org.great.entity.User"> 
+		update tb_user set user_date=#{user_date} where user_id=#{user_id}
+	</update> 
+	
+	<update id="updateuserbyid" parameterType="org.great.entity.User"> 
+		update tb_user 
+		 <set>
+            <if test="user_name != null">user_name=#{user_name},</if>
+            <if test="user_pwd != null">user_pwd=#{user_pwd},</if>
+            <if test="role_id != null">role_id=#{role_id},</if>
+            <if test="user_account != null">user_account=#{user_account}</if>
+        </set>
+		where user_id=#{user_id}
+	</update> 
+	
+	<update id="deleteuserbyid" parameterType="int">
+		update tb_user set user_state="已删除" where user_id = #{uid}
+	</update>
+</mapper>
+	

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="org.great.mapper.PriceMapper">
+
+	<insert id="addPrice" parameterType="org.great.entity.Price">
+	insert into tb_price(price_cost,price_retail,price_ratio,price_floor,price_invoice,price_settle) 
+	values(#{price_cost,jdbcType=VARCHAR},#{price_retail,jdbcType=VARCHAR},#{price_ratio,jdbcType=VARCHAR},#{price_floor,jdbcType=VARCHAR},#{price_invoice,jdbcType=VARCHAR},#{price_settle,jdbcType=VARCHAR})
+		<selectKey keyProperty="price_id" resultType="int" order="AFTER">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<update id="updatePrice" parameterType="org.great.entity.Price">
+		update tb_price
+        <set>
+            <if test="price_cost != null">price_cost=#{price_cost},</if>
+            <if test="price_retail != null">price_retail=#{price_retail},</if>
+            <if test="price_ratio != null">price_ratio=#{price_ratio},</if>
+            <if test="price_floor != null">price_floor=#{price_floor},</if>
+            <if test="price_invoice != null">price_invoice=#{price_invoice},</if>
+            <if test="price_settle != null">price_settle=#{price_settle}</if>
+        </set>
+        where price_id=#{price_id}
+	</update>
+	
+	<select id="getPriceByDrugId" 
+	 	parameterType="int"
+		resultMap="priceList">
+		select a.*,b.* from (SELECT drug_id,price_id,drug_name1 FROM tb_drug where drug_id=#{drug_id} )a 
+		left join tb_price b on a.price_id=b.price_id     
+	</select> 
+	
+	<resultMap type="org.great.entity.Price" id="priceList">
+		<result property="drug_name1" column="drug_name1"/>	
+		<association property="price" column="price_id" javaType="org.great.entity.Price">
+			<result property="price_id" column="price_id"/>
+		</association>
+	</resultMap>
+</mapper>

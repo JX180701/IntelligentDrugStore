@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="org.great.mapper.PriceLogMapper">
+
+	
+	<select id="searchPriceLogByDrugId" resultMap="priceLogList">
+		select a.*,b.drug_name1 from(select * from tb_price_log where drug_id=#{drug_id})a 
+		left join tb_drug b on a.drug_id=b.drug_id
+	</select>
+	<resultMap type="org.great.entity.PriceLog" id="priceLogList">
+			<id property="price_log_id" column="price_log_id"/>
+			<result property="drug_id" column="drug_id"/>
+			<result property="price_log_old" column="price_log_old"/>
+			<result property="price_log_new" column="price_log_new"/>
+			<result property="price_log_date" column="price_log_date"/>
+			<association property="drug" javaType="org.great.entity.Drug">
+				<id property="drug_id" column="drug_id"/>
+				<result property="drug_name1" column="drug_name1"/>
+			</association>
+	</resultMap>
+	
+	<insert id="addPriceLog" parameterType="org.great.entity.PriceLog">
+	
+		insert into tb_price_log (price_log_id,drug_id,price_log_old,price_log_new,price_log_date,price_req_state) 
+		values(#{price_log_id},#{drug_id},#{price_log_old},#{price_log_new},#{price_log_date},#{price_req_state})
+		
+	</insert>
+	
+</mapper>

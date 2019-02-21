@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="org.great.mapper.SellMapper">
+
+	
+	<select id="unsalable"
+		resultType="org.great.entity.Sell">
+
+		select * from tb_sell where 
+		str_to_date(sell_date, '%Y-%m-%d') BETWEEN str_to_date('1970-01-01', '%Y-%m-%d') AND
+			str_to_date(#{date}, '%Y-%m-%d')
+		ORDER BY sell_date ASC
+	</select>
+	
+	<select id="getPsychotropicSellList" 
+		resultMap="psychotropicSellList">
+		select e.*,f.user_name from 
+		(select c.*,d.drug_name1,d.drug_unit2 from    
+		(select a.*,b.drug_id,b.batch from   
+		(select sell_id,sell_num,drugstore_id,user_id,sell_date,sell_price from tb_sell)a 
+		left join tb_drugstore b on a.drugstore_id=b.drugstore_id)c ,    
+		tb_drug d where c.drug_id=d.drug_id and drug_special='yes')e    
+		left join tb_user f on e.user_id=f.user_id   
+	</select> 
+	
+	<resultMap type="org.great.entity.Sell" id="psychotropicSellList">
+		<result property="sell_id" column="sell_id"/>	
+		<result property="sell_num" column="sell_num"/>
+		<result property="sell_date" column="sell_date"/>
+		<result property="sell_price" column="sell_price"/>
+		<result property="user_id" column="user_id" />
+		<result property="drugstore_id" column="drugstore_id" />
+		<association property="user" javaType="org.great.entity.User">
+			<id property="user_id" column="user_id" />
+			<result property="user_name" column="user_name"/>
+		</association>
+		<association property="drugStore" javaType="org.great.entity.DrugStore">
+			<id property="drugstore_id" column="drugstore_id" />
+			<result property="batch" column="batch"/>
+			<result property="drug_id" column="drug_id" />
+			<association property="drug" javaType="org.great.entity.Drug">
+				<id property="drug_id" column="drug_id" />
+				<result property="drug_name1" column="drug_name1"/>
+				<result property="drug_unit2" column="drug_unit2"/>
+			</association>
+		</association>
+	</resultMap>
+	
+	<insert id="addSell" parameterType="org.great.entity.Sell" >
+	
+	insert into tb_sell(user_id,sell_num,sell_date,sell_price,drug_id) 
+	values(#{user_id},#{sell_num},#{sell_date},#{sell_price},#{drug_id}) 
+					  
+		
+	
+	</insert>
+	
+	<select id="getSellList" resultType="org.great.entity.Sell">
+	select * from tb_sell where drug_id=#{drug_id}
+	
+	ORDER BY sell_date desc
+	</select>
+	
+</mapper>

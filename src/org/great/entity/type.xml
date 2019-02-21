@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="org.great.mapper.TypeMapper">
+
+	<select id="findAllType" resultMap="typeList">
+		select * from tb_type
+	</select>
+	
+	<resultMap type="org.great.entity.Type" id="typeList">
+<!-- 			<result property="id" column="id"/> -->
+			<result property="type_id" column="type_id"/>
+			<result property="type_pid" column="type_pid"/>
+			<result property="type_name" column="type_name"/>
+	</resultMap>
+	
+	<select id="findById" parameterType="org.great.entity.Type" resultType="org.great.entity.Type">
+		select * from tb_type where type_id = #{type_id} 
+	</select>
+	
+	<select id="findByName" parameterType="String" resultType="org.great.entity.Type">
+		select * from tb_type where type_name = #{name} 
+	</select>
+	
+	<insert id="addType" parameterType="org.great.entity.Type">
+		insert into tb_type (type_pid,type_name) 
+		values(#{type_pid},#{type_name})
+	</insert>
+	
+	
+	<select id="findByCondition" resultMap="conditionList" parameterType="hashmap">
+		select * from tb_type 
+		<where>
+           <if test="type_pid != null">
+               and (tb_type.type_pid = #{type_pid} or tb_type.type_id = #{type_pid} or tb_type.type_id = 0)
+           </if>
+	     </where>
+	</select>
+	<resultMap type="org.great.entity.Type" id="conditionList">
+			<result property="type_id" column="type_id"/>
+			<result property="type_pid" column="type_pid"/>
+			<result property="type_name" column="type_name"/>
+	</resultMap>
+	
+	<update id="updateType" parameterType="org.great.entity.Type">
+		update tb_type
+        <set>
+            <if test="type_pid != null">type_pid=#{type_pid},</if>
+            <if test="type_name != null">type_name=#{type_name}</if>
+        </set>
+        where type_id=#{type_id}
+	</update>
+	
+	<delete id="deleteById" parameterType="int">
+		delete from tb_type where type_id = #{id}
+	</delete>
+
+</mapper>
+	

@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="org.great.mapper.DrugMapper">
+
+	<insert id="addDrug" parameterType="org.great.entity.Drug">
+		insert into tb_drug (drug_name1,drug_name2,drug_unsalable,drug_standard,drug_dosage,direction_id,price_id,drug_unit1,drug_unit2,drug_formula,drug_special,drug_antibiotic,drug_insurance,type_id,drug_state) 
+		values(#{drug_name1,jdbcType=VARCHAR},#{drug_name2,jdbcType=VARCHAR},#{drug_unsalable,jdbcType=VARCHAR},#{drug_standard,jdbcType=VARCHAR},#{drug_dosage,jdbcType=VARCHAR},#{direction_id,jdbcType=INTEGER},#{price_id,jdbcType=INTEGER},#{drug_unit1,jdbcType=VARCHAR},#{drug_unit2,jdbcType=VARCHAR},#{drug_formula,jdbcType=VARCHAR},#{drug_special,jdbcType=VARCHAR},#{drug_antibiotic,jdbcType=VARCHAR},#{drug_insurance,jdbcType=VARCHAR},#{type_id,jdbcType=INTEGER},#{drug_state,jdbcType=INTEGER})
+		<selectKey keyProperty="drug_id" resultType="int" order="AFTER">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id="findAllDrug" resultMap="drugList">
+		select * from tb_drug d left join tb_type t on  d.type_id = t.type_id left join tb_price p on d.price_id = p.price_id
+		left join tb_direction di on d.direction_id = di.direction_id
+	</select>
+	<resultMap type="org.great.entity.Drug" id="drugList">
+			<id property="drug_id" column="drug_id"/>
+			<result property="drug_name1" column="drug_name1"/>
+			<result property="drug_name2" column="drug_name2"/>
+			<result property="drug_unsalable" column="drug_unsalable"/>
+			<result property="drug_standard" column="drug_standard"/>
+			<result property="drug_dosage" column="drug_dosage"/>
+			<result property="direction_id" column="direction_id"/>
+			<result property="price_id" column="price_id"/>
+			<result property="drug_unit1" column="drug_unit1"/>
+			<result property="drug_unit2" column="drug_unit2"/>
+			<result property="drug_formula" column="drug_formula"/>
+			<result property="drug_special" column="drug_special"/>
+			<result property="drug_antibiotic" column="drug_antibiotic"/>
+			<result property="drug_insurance" column="drug_insurance"/>
+			<result property="type_id" column="type_id"/>
+			<result property="drug_state" column="drug_state"/>
+			<result property="drug_threshold_store" column="drug_threshold_store"/>
+			<result property="drug_threshold_library" column="drug_threshold_library"/>
+			
+			<association property="type" javaType="org.great.entity.Type">
+				<id property="type_id" column="type_id"/>
+				<result property="type_pid" column="type_pid"/>
+				<result property="type_name" column="type_name"/>
+			</association>
+			<association property="price" javaType="org.great.entity.Price">
+				<id property="price_id" column="price_id"/>
+				<result property="price_cost" column="price_cost"/>
+				<result property="price_retail" column="price_retail"/>
+				<result property="price_ratio" column="price_ratio"/>
+				<result property="price_floor" column="price_floor"/>
+				<result property="price_invoice" column="price_invoice"/>
+				<result property="price_settle" column="price_settle"/>
+			</association>
+			<association property="direction" javaType="org.great.entity.Direction">
+				<id property="direction_id" column="direction_id"/>
+				<result property="direction_num" column="direction_num"/>
+				<result property="direction_time" column="direction_time"/>
+				<result property="direction_describe" column="direction_describe"/>
+			</association>
+	</resultMap>
+	
+	<select id="findById" parameterType="int" resultMap="finddrug">
+		select * from (select * from tb_drug where drug_id = #{drug_id}) d left join tb_type t on  d.type_id = t.type_id left join tb_price p on d.price_id = p.price_id
+		left join tb_direction di on d.direction_id = di.direction_id
+	</select>
+	
+	<resultMap type="org.great.entity.Drug" id="finddrug">
+			<id property="drug_id" column="drug_id"/>
+			<result property="drug_name1" column="drug_name1"/>
+			<result property="drug_name2" column="drug_name2"/>
+			<result property="drug_unsalable" column="drug_unsalable"/>
+			<result property="drug_standard" column="drug_standard"/>
+			<result property="drug_dosage" column="drug_dosage"/>
+			<result property="direction_id" column="direction_id"/>
+			<result property="price_id" column="price_id"/>
+			<result property="drug_unit1" column="drug_unit1"/>
+			<result property="drug_unit2" column="drug_unit2"/>
+			<result property="drug_formula" column="drug_formula"/>
+			<result property="drug_special" column="drug_special"/>
+			<result property="drug_antibiotic" column="drug_antibiotic"/>
+			<result property="drug_insurance" column="drug_insurance"/>
+			<result property="type_id" column="type_id"/>
+			<result property="drug_state" column="drug_state"/>
+			
+			<association property="type" javaType="org.great.entity.Type">
+				<id property="type_id" column="type_id"/>
+				<result property="type_pid" column="type_pid"/>
+				<result property="type_name" column="type_name"/>
+			</association>
+			<association property="price" javaType="org.great.entity.Price">
+				<id property="price_id" column="price_id"/>
+				<result property="price_cost" column="price_cost"/>
+				<result property="price_retail" column="price_retail"/>
+				<result property="price_ratio" column="price_ratio"/>
+				<result property="price_floor" column="price_floor"/>
+				<result property="price_invoice" column="price_invoice"/>
+				<result property="price_settle" column="price_settle"/>
+			</association>
+			<association property="direction" javaType="org.great.entity.Direction">
+				<id property="direction_id" column="direction_id"/>
+				<result property="direction_num" column="direction_num"/>
+				<result property="direction_time" column="direction_time"/>
+				<result property="direction_describe" column="direction_describe"/>
+			</association>
+	</resultMap>
+	
+	<update id="updateDrug" parameterType="org.great.entity.Drug">
+		update tb_drug
+        <set>
+            <if test="drug_name1 != null">drug_name1=#{drug_name1},</if>
+            <if test="drug_name2 != null">drug_name2=#{drug_name2},</if>
+            <if test="drug_unsalable != null">drug_unsalable=#{drug_unsalable},</if>
+            <if test="drug_standard != null">drug_standard=#{drug_standard},</if>
+            <if test="drug_dosage != null">drug_dosage=#{drug_dosage},</if>
+            <if test="direction_id != null">direction_id=#{direction_id},</if>
+            <if test="price_id != null">price_id=#{price_id},</if>
+            <if test="drug_unit1 != null">drug_unit1=#{drug_unit1},</if>
+            <if test="drug_unit2 != null">drug_unit2=#{drug_unit2},</if>
+            <if test="drug_formula != null">drug_formula=#{drug_formula},</if>
+            <if test="drug_special != null">drug_special=#{drug_special},</if>
+            <if test="drug_antibiotic != null">drug_antibiotic=#{drug_antibiotic},</if>
+            <if test="drug_insurance != null">drug_insurance=#{drug_insurance},</if>
+            <if test="type_id != null">type_id=#{type_id},</if>
+            <if test="drug_state != null">drug_state=#{drug_state}</if>
+        </set>
+        where drug_id=#{drug_id}
+	</update>
+	
+	
+	<select id="findByCondition" resultMap="conditionList" parameterType="hashmap">
+		select * from (select * from tb_drug 
+		<where>
+			<if test="drug_name != null">
+               and (tb_drug.drug_name1 like "%"#{drug_name}"%"
+               or tb_drug.drug_name2 like "%"#{drug_name}"%")
+           </if>
+	       <if test="drug_special1 != null">
+               and tb_drug.drug_special = #{drug_special1}
+           </if>
+           <if test="drug_antibiotic != null">
+               and tb_drug.drug_antibiotic = #{drug_antibiotic}
+           </if>
+           <if test="drug_insurance != null">
+               and tb_drug.drug_insurance = #{drug_insurance}
+           </if>
+	     </where>
+		) d left join tb_type t on d.type_id = t.type_id
+		left join tb_price p on d.price_id = p.price_id
+		left join tb_direction di on d.direction_id = di.direction_id
+	</select>
+	<resultMap type="org.great.entity.Drug" id="conditionList">
+			<id property="drug_id" column="drug_id"/>
+			<result property="drug_name1" column="drug_name1"/>
+			<result property="drug_name2" column="drug_name2"/>
+			<result property="drug_unsalable" column="drug_unsalable"/>
+			<result property="drug_standard" column="drug_standard"/>
+			<result property="drug_dosage" column="drug_dosage"/>
+			<result property="direction_id" column="direction_id"/>
+			<result property="price_id" column="price_id"/>
+			<result property="drug_unit1" column="drug_unit1"/>
+			<result property="drug_unit2" column="drug_unit2"/>
+			<result property="drug_formula" column="drug_formula"/>
+			<result property="drug_special" column="drug_special"/>
+			<result property="drug_antibiotic" column="drug_antibiotic"/>
+			<result property="drug_insurance" column="drug_insurance"/>
+			<result property="type_id" column="type_id"/>
+			<result property="drug_state" column="drug_state"/>
+			
+			<association property="type" javaType="org.great.entity.Type">
+				<id property="type_id" column="type_id"/>
+				<result property="type_pid" column="type_pid"/>
+				<result property="type_name" column="type_name"/>
+			</association>
+			<association property="price" javaType="org.great.entity.Price">
+				<id property="price_id" column="price_id"/>
+				<result property="price_cost" column="price_cost"/>
+				<result property="price_retail" column="price_retail"/>
+				<result property="price_ratio" column="price_ratio"/>
+				<result property="price_floor" column="price_floor"/>
+				<result property="price_invoice" column="price_invoice"/>
+				<result property="price_settle" column="price_settle"/>
+			</association>
+			<association property="direction" javaType="org.great.entity.Direction">
+				<id property="direction_id" column="direction_id"/>
+				<result property="direction_num" column="direction_num"/>
+				<result property="direction_time" column="direction_time"/>
+				<result property="direction_describe" column="direction_describe"/>
+			</association>
+	</resultMap>
+	
+	
+	<select id="findByName" parameterType="String" resultMap="findByName">
+		select * from (select * from tb_drug where drug_name1 = #{name}) d left join tb_type t on  d.type_id = t.type_id left join tb_price p on d.price_id = p.price_id
+		left join tb_direction di on d.direction_id = di.direction_id
+	</select>
+	
+	<resultMap type="org.great.entity.Drug" id="findByName">
+			<id property="drug_id" column="drug_id"/>
+			<result property="drug_name1" column="drug_name1"/>
+			<result property="drug_name2" column="drug_name2"/>
+			<result property="drug_unsalable" column="drug_unsalable"/>
+			<result property="drug_standard" column="drug_standard"/>
+			<result property="drug_dosage" column="drug_dosage"/>
+			<result property="direction_id" column="direction_id"/>
+			<result property="price_id" column="price_id"/>
+			<result property="drug_unit1" column="drug_unit1"/>
+			<result property="drug_unit2" column="drug_unit2"/>
+			<result property="drug_formula" column="drug_formula"/>
+			<result property="drug_special" column="drug_special"/>
+			<result property="drug_antibiotic" column="drug_antibiotic"/>
+			<result property="drug_insurance" column="drug_insurance"/>
+			<result property="type_id" column="type_id"/>
+			<result property="drug_state" column="drug_state"/>
+			
+			<association property="type" javaType="org.great.entity.Type">
+				<id property="type_id" column="type_id"/>
+				<result property="type_pid" column="type_pid"/>
+				<result property="type_name" column="type_name"/>
+			</association>
+			<association property="price" javaType="org.great.entity.Price">
+				<id property="price_id" column="price_id"/>
+				<result property="price_cost" column="price_cost"/>
+				<result property="price_retail" column="price_retail"/>
+				<result property="price_ratio" column="price_ratio"/>
+				<result property="price_floor" column="price_floor"/>
+				<result property="price_invoice" column="price_invoice"/>
+				<result property="price_settle" column="price_settle"/>
+			</association>
+			<association property="direction" javaType="org.great.entity.Direction">
+				<id property="direction_id" column="direction_id"/>
+				<result property="direction_num" column="direction_num"/>
+				<result property="direction_time" column="direction_time"/>
+				<result property="direction_describe" column="direction_describe"/>
+			</association>
+	</resultMap>
+	
+	<select id="findPrice" resultMap="priceList">
+		select * from tb_drug d left join tb_price p on d.price_id=p.price_id
+	</select>
+	
+	<select id="condPrice" resultMap="priceList" parameterType="java.util.Map">
+		select * from tb_drug d left join tb_price p on d.price_id=p.price_id where 1=1
+		
+		<if test="drug_id!=0 ">
+			and drug_id =#{drug_id}
+		</if>
+		
+		<if test="drug_name!='' ">
+			and drug_name1 =#{drug_name}
+		</if>
+		
+		<if test="cost!=0 ">
+			and price_cost =#{cost}
+		</if>
+		<if test="retail!=0 ">
+			and price_retail =#{retail}
+		</if>
+		
+		
+	</select>
+	
+	<resultMap  id="priceList" type="org.great.entity.Drug">
+	
+	<id property="drug_id" column="drug_id"/>
+	
+	<result property="drug_name1" column="drug_name1"/>
+	
+	
+	<association property="price"   javaType="org.great.entity.Price" >
+	<id property="price_id"  column="price_id"/>
+	<result property="price_cost" column="price_cost"/>
+	<result property="price_retail"  column="price_retail"/>
+	<result property="price_ratio"  column="price_ratio"/>
+	<result property="price_floor" column="price_floor"/>
+	<result property="price_invoice" column="price_invoice"/>
+	<result property="price_settle" column="price_settle"/>
+	</association>
+	</resultMap>
+	
+	<select id="ajaxFindName" resultMap="priceList">
+		select * from tb_drug d left join tb_price p on d.price_id=p.price_id
+		
+		where d.drug_name1 like #{0}
+	</select>
+	
+	<update id="updateLibraryThreshold">
+		update tb_drug set drug_threshold_library=#{1} where drug_id=#{0}
+	</update>
+	
+	<update id="updateDrugThresholdStore" parameterType="org.great.entity.Drug">
+		update tb_drug
+        <set>
+            <if test="drug_threshold_store != null">drug_threshold_store=#{drug_threshold_store}</if>
+        </set>
+        where drug_id=#{drug_id}
+	</update>
+</mapper>

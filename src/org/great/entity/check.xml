@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="org.great.mapper.CheckMapper">
+
+	<insert id="addCheck" parameterType="org.great.entity.Check">
+	
+		insert into tb_check (check_id,check_count,check_reality,check_target,check_profit,check_value) 
+		values(#{check_id},#{check_count},#{check_reality},#{check_target},#{check_profit},#{check_value})
+		
+	</insert>
+
+</mapper>
+	

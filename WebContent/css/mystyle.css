@@ -1,0 +1,40 @@
+@charset "UTF-8";
+/*一卡通自助终端*/
+#self-panel{      
+margin-top: 20px;    
+display:inline-table;   
+background-color: white;   
+border: 1px solid #dddddd ;    
+padding: 30px;   
+border-radius: 6px;      
+box-shadow: 0 0 10px #999;   
+width:60%;
+}
+#self-panel .panel-top{   
+font-size: 13px;    
+font-family: "MS Serif", "New York", serif;  
+font-weight: normal;    
+padding: 10px 0;    
+border-bottom: 1px solid #dddddd;    
+width: 30%;    
+margin: 0 auto;
+}
+#self-panel .panel-content{   
+ margin-top: 10px;
+}
+
+#self-panel .c a{    
+margin-top: 20px;    
+width: 25%;    
+height: 10%;        
+font-size: 18px;    
+margin-bottom: 10px;   
+border-radius: 6px;   
+background-color: #CCC;
+display:inline-block;
+padding: 10px 12px;
+color:#000; 
+text-decoration:none;
+border: #FFF 1px solid;
+}
+#self-panel .c a:hover{background:#0CC; border::#0CC 1px solid;}

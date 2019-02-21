@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="org.great.mapper.LibraryDetailMapper">
+
+	<select id="getPsychotropicLibraryDetailList"
+		resultMap="psychotropicLibraryDetailList">
+		select c.*,d.drug_name1,d.drug_unit1 from 
+		(select a.*,b.drug_id from
+		(select * from tb_library_detail where library_detail_type='入库')a 
+		left join tb_library b on a.library_id=b.library_id)c , tb_drug d 
+		where c.drug_id=d.drug_id and d.drug_special='yes'
+	</select>
+
+	<resultMap type="org.great.entity.LibraryDetail"
+		id="psychotropicLibraryDetailList">
+		<result property="library_detail_id" column="library_detail_id" />
+		<result property="library_id" column="library_id" />
+		<result property="library_detail_num" column="library_detail_num" />
+		<result property="library_detail_price" column="library_detail_price" />
+		<result property="library_detail_date" column="library_detail_date" />
+		<association property="library" javaType="org.great.entity.Library">
+			<id property="library_id" column="library_id" />
+			<result property="drug_id" column="drug_id" />
+			<association property="drug" javaType="org.great.entity.Drug">
+				<id property="drug_id" column="drug_id" />
+				<result property="drug_name1" column="drug_name1"/>
+				<result property="drug_unit1" column="drug_unit1"/>
+			</association>
+		</association>
+	</resultMap>
+
+	<insert id="addLibraryDetail"
+		parameterType="org.great.entity.LibraryDetail">
+		insert into tb_library_detail
+		(library_id,library_detail_num,library_detail_price,library_detail_date,library_detail_type)
+		values(#{library_id,jdbcType=INTEGER},#{library_detail_num,jdbcType=VARCHAR},#{library_detail_price,jdbcType=VARCHAR},#{library_detail_date,jdbcType=VARCHAR},#{library_detail_type,jdbcType=VARCHAR})
+	</insert>
+
+	<select id="findAllLibraryDetail"
+		parameterType="org.great.entity.LibraryDetail"
+		resultMap="LibraryDetailListMap">
+		select * from
+		(select * from tb_library_detail
+		<where>
+			<if test="date1 != null">
+				library_detail_date &gt;= #{date1}
+			</if>
+			<if test="date2 != null">
+				and library_detail_date &lt;= #{date2}
+			</if>
+		</where>
+		) ld
+		left join tb_library li on li.library_id = ld.library_id
+		left join
+		tb_purchase p on p.purchase_id = li.purchase_id
+		left join tb_user u on
+		p.user_id = u.user_id
+		left join tb_drug d on p.drug_id = d.drug_id
+		left
+		join tb_role r on u.role_id = r.role_id
+		left join tb_direction di on
+		d.direction_id = di.direction_id
+		left join tb_price pr on d.price_id =
+		pr.price_id
+		left join tb_type ty on d.type_id = ty.type_id
+	</select>
+
+	<resultMap type="org.great.entity.LibraryDetail"
+		id="LibraryDetailListMap">
+
+		<id property="library_detail_id" column="library_detail_id" />
+		<result property="library_id" column="library_id" />
+		<result property="library_detail_num"
+			column="library_detail_num" />
+		<result property="library_detail_price"
+			column="library_detail_price" />
+		<result property="library_detail_date"
+			column="library_detail_date" />
+		<result property="library_detail_type"
+			column="library_detail_type" />
+
+		<association property="library"
+			javaType="org.great.entity.Library">
+			<id property="library_id" column="library_id" />
+			<result property="drug_id" column="drug_id" />
+			<result property="purchase_id" column="purchase_id" />
+			<result property="validity" column="validity" />
+			<result property="library_num" column="library_num" />
+			<result property="library_threshold"
+				column="library_threshold" />
+			<result property="library_state" column="library_state" />
+			<result property="batch" column="batch" />
+			<association property="drug"
+				javaType="org.great.entity.Drug">
+				<id property="drug_id" column="drug_id" />
+				<result property="drug_name1" column="drug_name1" />
+				<result property="drug_name2" column="drug_name2" />
+				<result property="drug_unsalable" column="drug_unsalable" />
+				<result property="drug_standard" column="drug_standard" />
+				<result property="drug_dosage" column="drug_dosage" />
+				<result property="drug_unit1" column="drug_unit1" />
+				<result property="drug_unit2" column="drug_unit2" />
+				<result property="drug_formula" column="drug_formula" />
+				<result property="drug_special" column="drug_special" />
+				<result property="drug_antibiotic" column="drug_antibiotic" />
+				<result property="drug_antibiotic" column="drug_insurance" />
+				<result property="drug_state" column="drug_state" />
+				<result property="direction_id" column="direction_id" />
+				<result property="price_id" column="price_id" />
+				<result property="type_id" column="type_id" />
+				<association property="direction"
+					javaType="org.great.entity.Direction">
+					<id property="direction_id" column="direction_id" />
+					<result property="direction_num" column="direction_num" />
+					<result property="direction_time" column="direction_time" />
+					<result property="direction_describe"
+						column="direction_describe" />
+				</association>
+				<association property="price"
+					javaType="org.great.entity.Price">
+					<id property="price_id" column="price_id" />
+					<result property="price_cost" column="price_cost" />
+					<result property="price_retail" column="price_retail" />
+					<result property="price_ratio" column="price_ratio" />
+					<result property="price_floor" column="price_floor" />
+					<result property="price_invoice" column="price_invoice" />
+					<result property="price_settle" column="price_settle" />
+				</association>
+				<association property="type"
+					javaType="org.great.entity.Type">
+					<id property="type_id" column="type_id" />
+					<result property="type_pid" column="type_pid" />
+					<result property="type_name" column="type_name" />
+				</association>
+			</association>
+			<association property="purchase"
+				javaType="org.great.entity.Purchase">
+				<id property="purchase_id" column="purchase_id" />
+				<result property="drug_id" column="drug_id" />
+				<result property="user_id" column="user_id" />
+				<result property="purchase_supplier"
+					column="purchase_supplier" />
+				<result property="purchase_num" column="purchase_num" />
+				<result property="purchase_price" column="purchase_price" />
+				<result property="purchase_date" column="purchase_date" />
+				<association property="user"
+					javaType="org.great.entity.User">
+					<id property="user_id" column="user_id" />
+					<result property="user_name" column="user_name" />
+					<result property="user_pwd" column="user_pwd" />
+					<result property="role_id" column="role_id" />
+					<result property="user_state" column="user_state" />
+					<result property="user_date" column="user_date" />
+					<result property="user_account" column="user_account" />
+					<association property="role"
+						javaType="org.great.entity.Role">
+						<id property="role_id" column="role_id" />
+						<result property="role_name" column="role_name" />
+					</association>
+				</association>
+				<association property="drug"
+					javaType="org.great.entity.Drug">
+					<id property="drug_id" column="drug_id" />
+					<result property="drug_name1" column="drug_name1" />
+					<result property="drug_name2" column="drug_name2" />
+					<result property="drug_unsalable" column="drug_unsalable" />
+					<result property="drug_standard" column="drug_standard" />
+					<result property="drug_dosage" column="drug_dosage" />
+					<result property="drug_unit1" column="drug_unit1" />
+					<result property="drug_unit2" column="drug_unit2" />
+					<result property="drug_formula" column="drug_formula" />
+					<result property="drug_special" column="drug_special" />
+					<result property="drug_antibiotic" column="drug_antibiotic" />
+					<result property="drug_antibiotic" column="drug_insurance" />
+					<result property="drug_state" column="drug_state" />
+					<result property="direction_id" column="direction_id" />
+					<result property="price_id" column="price_id" />
+					<result property="type_id" column="type_id" />
+					<association property="direction"
+						javaType="org.great.entity.Direction">
+						<id property="direction_id" column="direction_id" />
+						<result property="direction_num" column="direction_num" />
+						<result property="direction_time" column="direction_time" />
+						<result property="direction_describe"
+							column="direction_describe" />
+					</association>
+					<association property="price"
+						javaType="org.great.entity.Price">
+						<id property="price_id" column="price_id" />
+						<result property="price_cost" column="price_cost" />
+						<result property="price_retail" column="price_retail" />
+						<result property="price_ratio" column="price_ratio" />
+						<result property="price_floor" column="price_floor" />
+						<result property="price_invoice" column="price_invoice" />
+						<result property="price_settle" column="price_settle" />
+					</association>
+					<association property="type"
+						javaType="org.great.entity.Type">
+						<id property="type_id" column="type_id" />
+						<result property="type_pid" column="type_pid" />
+						<result property="type_name" column="type_name" />
+					</association>
+				</association>
+			</association>
+		</association>
+	</resultMap>
+
+</mapper>

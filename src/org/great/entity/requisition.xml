@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="org.great.mapper.RequisitionMapper">
+
+
+	<select id="getAllBreakageRrquisitionList" resultMap="breakageList">
+		select a.*,b.drug_name1 from(select * from tb_requisition where requisition_type='药品报损')a left join tb_drug b on a.drug_id=b.drug_id
+	</select>
+	<resultMap type="org.great.entity.Requisition" id="breakageList">
+		<id property="requisition_id" column="requisition_id" />
+		<result property="drug_id" column="drug_id" />
+		<result property="user_id" column="user_id" />
+		<result property="admin_id" column="admin_id" />
+		<result property="requisition_num" column="requisition_num" />
+		<result property="requisition_state" column="requisition_state" />
+		<result property="requisition_num" column="requisition_num" />
+		<result property="requisition_date1" column="requisition_date1" />
+		<result property="requisition_date2" column="requisition_date2" />
+		<result property="requisition_discribe" column="requisition_discribe" />
+		<result property="requisition_type" column="requisition_type" />
+		<result property="requisition_batch" column="requisition_batch" />
+		<association property="drug" javaType="org.great.entity.Drug">
+			<id property="drug_id" column="drug_id" />
+			<result property="drug_name1" column="drug_name1" />
+		</association>
+		 <association property="user" column="user_id" javaType="org.great.entity.User" select="userUser"/>
+    	 <association property="admin" column="admin_id" javaType="org.great.entity.User" select="adminUser"/>
+	</resultMap>
+
+	<insert id="addRequisition" parameterType="org.great.entity.Requisition">
+	
+		insert into tb_requisition (requisition_id,user_id,admin_id,drug_id,requisition_num,requisition_state,requisition_date1,requisition_date2,requisition_type,requisition_discribe,requisition_batch) 
+		values(#{requisition_id},#{user_id},#{admin_id},#{drug_id},#{requisition_num},#{requisition_state},#{requisition_date1},#{requisition_date2},#{requisition_type},#{requisition_discribe},#{requisition_batch})
+		
+	</insert>
+	
+	<select id="select" resultType="org.great.entity.Requisition" parameterType="org.great.entity.Requisition">
+	
+		select * from tb_requisition where 1=1
+		<if test=" drug_id!=0 ">
+			and drug_id =#{drug_id}
+		</if>
+		<if test="requisition_state!='-选择状态-' and requisition_state!=null">
+			and requisition_state=#{requisition_state}
+		</if>
+		
+		<if test="requisition_type!='-选择类型-' and requisition_type!=null">
+			and requisition_type=#{requisition_type}
+		</if>
+		<if test="requisition_date1!='' and requisition_date1!=null">
+			and   str_to_date(requisition_date1, '%Y-%m-%d') between str_to_date('1970-01-01', '%Y-%m-%d')  and str_to_date(#{requisition_date1}, '%Y-%m-%d')
+		</if>
+		
+		
+	
+	</select>
+	
+	<update id="modRequisition" parameterType="org.great.entity.Requisition">
+	update tb_requisition set 
+						user_id=#{user_id},
+						
+						drug_id=#{drug_id},
+						requisition_num=#{requisition_num},
+						requisition_state=#{requisition_state},
+						requisition_date1=#{requisition_date1},
+						
+						requisition_type=#{requisition_type},
+						requisition_discribe=#{requisition_discribe},
+						requisition_batch=#{requisition_batch}
+						where requisition_id=#{requisition_id}
+	
+	
+	</update>
+	
+	<delete id="removeRequisition" parameterType="string">
+
+		delete from tb_requisition  where requisition_id=#{id}
+
+	</delete>
+	
+	<select id="lhFindRequest" parameterType="hashmap" resultMap="lhFindRequestMap">
+		select * from (select * from tb_requisition 
+			<where>
+			<if test="date1 != null">
+				requisition_date1 &gt;= #{date1}
+			</if>
+			<if test="date2 != null">
+				and requisition_date1 &lt;= #{date2}
+			</if>
+			<if test="id != null">
+				and requisition_id = #{id}
+			</if>
+			</where>
+			) requ 
+			left join tb_drug dr on  requ.drug_id = dr.drug_id
+<!-- 			left join tb_user u on requ.user_id = u.user_id -->
+<!-- 			left join tb_user ad on requ.admin_id = ad.user_id -->
+	</select>
+	<resultMap type="org.great.entity.Requisition" id="lhFindRequestMap">
+		<id property="requisition_id" column="requisition_id" />
+		<result property="drug_id" column="drug_id" />
+		<result property="user_id" column="user_id" />
+		<result property="admin_id" column="admin_id" />
+		<result property="requisition_num" column="requisition_num" />
+		<result property="requisition_state" column="requisition_state" />
+		<result property="requisition_num" column="requisition_num" />
+		<result property="requisition_date1" column="requisition_date1" />
+		<result property="requisition_date2" column="requisition_date2" />
+		<result property="requisition_discribe" column="requisition_discribe" />
+		<result property="requisition_type" column="requisition_type" />
+			<result property="requisition_batch" column="requisition_batch" />
+		<association property="drug" javaType="org.great.entity.Drug">
+			<id property="drug_id" column="drug_id" />
+			<result property="drug_name1" column="drug_name1" />
+		</association>
+<!-- 		<association property="user" javaType="org.great.entity.User"> -->
+<!-- 			<id property="user_id" column="user_id" /> -->
+<!-- 			<result property="user_name" column="user_name" /> -->
+<!-- 		</association> -->
+<!-- 		<association property="admin" javaType="org.great.entity.User"> -->
+<!-- 			<id property="user_id" column="user_id" /> -->
+<!-- 			<result property="user_name" column="user_name" /> -->
+<!-- 		</association> -->
+		 <association property="user" column="user_id" javaType="org.great.entity.User" select="userUser"/>
+    	 <association property="admin" column="admin_id" javaType="org.great.entity.User" select="adminUser"/>
+	</resultMap>
+	
+	<select id="userUser" resultMap="UserResultMap" parameterType="java.lang.Integer">
+    select * from tb_user where  user_id =  #{user_id,jdbcType=INTEGER}
+	</select>
+	
+	<select id="adminUser" resultMap="UserResultMap" parameterType="java.lang.Integer">
+    select * from tb_user where  user_id =  #{admin_id,jdbcType=INTEGER}
+	</select>
+	
+		<resultMap type="org.great.entity.User" id="UserResultMap">
+				<id property="user_id" column="user_id" /> 
+				<result property="user_name" column="user_name" />
+		</resultMap>
+		
+	<update id="updateState" parameterType="org.great.entity.Requisition">
+		update tb_requisition set requisition_state=#{requisition_state} where requisition_id=#{requisition_id}
+	</update>
+
+<update id="updateNameTime" parameterType="org.great.entity.Requisition">
+		update tb_requisition set admin_id=#{admin_id},requisition_date2=#{requisition_date2}  where requisition_id=#{requisition_id}
+	</update>
+</mapper>

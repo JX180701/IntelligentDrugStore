@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="org.great.mapper.AuthMapper">
+
+	<select id="findrole" parameterType="org.great.entity.Role"
+		resultMap="rolelist">
+		<!-- tbro.role_name,tbus.user_id,tbus.user_name,tbus.user_pwd,tbus.user_state,tbus.user_date,tbus.user_account -->
+		select * from tb_role;
+
+	</select>
+	<resultMap type="org.great.entity.Role" id="rolelist">
+		<id property="role_id" column="role_id" />
+
+		<result property="role_name" column="role_name" />
+
+
+	</resultMap>
+
+
+
+
+	<select id="GetMenuOnelist" parameterType="int"
+		resultMap="MenuOnelist">
+		select * from
+		tb_menu tm where
+		tm.menu_id in
+		(select tbm.menu_id
+		from tb_role_menu tbm
+		where
+		tbm.role_id = #{rid} )
+
+
+	</select>
+
+	<resultMap type="org.great.entity.Menu" id="MenuOnelist">
+		<id property="menu_id" column="menu_id" />
+		<result property="menu_pid" column="menu_pid" />
+		<result property="menu_name" column="menu_name" />
+		<result property="menu_url" column="menu_url" />
+
+<!-- 		<association property="auth" javaType="org.great.entity.Authority"> -->
+<!-- 			<id property="aut_id" column="aut_id" /> -->
+<!-- 		</association> -->
+
+<!-- 		<association property="ra" javaType="org.great.entity.RoleAuthority"> -->
+<!-- 			<id property="role_id" column="role_id" /> -->
+<!-- 		</association> -->
+
+<!-- 		<association property="menu" column="menu_id" -->
+<!-- 			javaType="org.great.entity.Menu"> -->
+<!-- 			<id property="menu_id" column="menu_id" /> -->
+
+<!-- 		</association> -->
+	</resultMap>
+
+
+
+<!-- 	 <select id="GetMenuTwolist" -->
+<!-- 		parameterType="org.great.entity.Menu" resultMap="MenuTwolist"> -->
+<!-- 		select mmm.* from -->
+<!-- 		tb_menu mmm left join ((select -->
+<!-- 		m.menu_id,m.menu_pid,m.menu_name,m.menu_url from tb_menu m left join -->
+<!-- 		(select menu_id from tb_authority where aut_id in (select aut_id from -->
+<!-- 		tb_role_aut where role_id = #{rid}))mm on m.menu_id = mm.menu_id where -->
+<!-- 		m.menu_id = mm.menu_id ) )me on mmm.menu_pid = me.menu_id -->
+<!-- 		where -->
+<!-- 		mmm.menu_pid = me.menu_id -->
+
+<!-- 	</select> -->
+
+<!-- 	<resultMap type="org.great.entity.Menu" id="MenuTwolist"> -->
+<!-- 		<id property="menu_id" column="menu_id" /> -->
+
+<!-- 		<result property="menu_pid" column="menu_pid" /> -->
+
+
+
+<!-- 		<result property="menu_pname" column="menu_pname" /> -->
+<!-- 		<result property="menu_url" column="menu_url" /> -->
+
+
+<!-- 		<association property="auth" column="aut_pid" -->
+<!-- 			javaType="org.great.entity.Authority"> -->
+<!-- 			<id property="aut_id" column="aut_id" /> -->
+
+
+<!-- 		</association> -->
+
+
+<!-- 		<association property="ra" column="role_id" -->
+<!-- 			javaType="org.great.entity.RoleAuthority"> -->
+<!-- 			<id property="role_id" column="role_id" /> -->
+
+<!-- 		</association> -->
+<!-- 	</resultMap> -->
+
+
+	<select id="GetMenuNOnelist" parameterType="int"
+		resultMap="MenuNOnelist">
+		select * from
+		tb_menu tm where
+		tm.menu_id not in
+		(select tbm.menu_id
+		from tb_role_menu tbm
+		where
+		tbm.role_id = #{rid} )
+
+
+	</select>
+
+	<resultMap type="org.great.entity.Menu" id="MenuNOnelist">
+		<id property="menu_id" column="menu_id" />
+
+		<result property="menu_pid" column="menu_pid" />
+
+
+
+		<result property="menu_name" column="menu_name" />
+		<result property="menu_url" column="menu_url" />
+
+
+		
+	</resultMap>
+
+
+
+<!-- 	<select id="GetMenuNTwolist" parameterType="int" -->
+<!-- 		resultMap="MenuNTwolist"> -->
+<!-- 		select m.menu_id,m.menu_pid,m.menu_name,m.menu_url from -->
+<!-- 		tb_menu m left join (select menu_id from tb_authority where aut_id not -->
+<!-- 		in -->
+<!-- 		(select aut_id from tb_role_aut where role_id =#{rid}))mm on -->
+<!-- 		m.menu_id = -->
+<!-- 		mm.menu_id where m.menu_id = mm.menu_id -->
+
+<!-- 	</select> -->
+
+<!-- 	<resultMap type="org.great.entity.Menu" id="MenuNTwolist"> -->
+<!-- 		<id property="menu_id" column="menu_id" /> -->
+
+<!-- 		<result property="menu_pid" column="menu_pid" /> -->
+
+
+
+<!-- 		<result property="menu_pname" column="menu_pname" /> -->
+<!-- 		<result property="menu_url" column="menu_url" /> -->
+
+
+<!-- 		<association property="auth" column="aut_pid" -->
+<!-- 			javaType="org.great.entity.Authority"> -->
+<!-- 			<id property="aut_id" column="aut_id" /> -->
+
+
+<!-- 		</association> -->
+
+
+<!-- 		<association property="ra" column="role_id" -->
+<!-- 			javaType="org.great.entity.RoleAuthority"> -->
+<!-- 			<id property="role_id" column="role_id" /> -->
+
+<!-- 		</association> -->
+<!-- 	</resultMap> -->
+
+
+
+
+
+
+
+
+	<delete id="removemenu" parameterType="org.great.entity.RoleMenu" > delete from tb_role_menu 
+		where role_id = #{role_id} and menu_id = #{menu_id}; </delete>
+		
+		 <insert id="addmenu" 
+		parameterType="org.great.entity.RoleMenu" > insert into tb_role_menu(role_id,menu_id)values(#{role_id},#{menu_id})  ; </insert> 
+		
+		
+		
+		
+		<select id="getCount" parameterType="org.great.entity.RoleMenu"
+		resultType="int">
+		 select count(*)from tb_role_menu trm where trm.menu_id in
+		(select menu_id from tb_menu where menu_pid = #{menu_id})
+		and trm.role_id = #{role_id}
+	</select>
+
+	 <resultMap type="org.great.entity.RoleMenu" id="count">
+	 <id property="menu_id" column="menu_id"/>
+	
+	 <result property="role_id" column="role_id"/>
+	 <result property="menu_id" column="menu_id"/>
+
+
+
+
+
+		
+	</resultMap> 
+		 
+		
+	
+			
+		
+		
+
+</mapper>
+	

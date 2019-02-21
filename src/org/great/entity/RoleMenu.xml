@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="org.great.mapper.RoleMenuMapper">
+
+	 <select id="getMenuListByRoleId" 
+	 	parameterType="int"
+		resultMap="menuList">
+		select b.menu_id,b.menu_pid,b.menu_name,b.menu_url 
+		from (select menu_id from tb_role_menu where role_id=#{role_id} )a 
+		left join tb_menu b on a.menu_id=b.menu_id      
+	</select> 
+	
+	<resultMap type="org.great.entity.Menu" id="menuList">
+		<id property="menu_id" column="menu_id"/>
+		<result property="menu_pid" column="menu_pid"/>
+		<result property="menu_name" column="menu_name"/>
+		<result property="menu_url" column="menu_url"/>		
+	</resultMap>
+
+</mapper>

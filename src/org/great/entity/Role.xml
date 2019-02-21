@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="org.great.mapper.RoleMapper">
+
+	
+
+
+	 <select id="findallrole" parameterType="org.great.entity.Role"
+		resultMap="rolelist">
+	 <!-- tbro.role_name,tbus.user_id,tbus.user_name,tbus.user_pwd,tbus.user_state,tbus.user_date,tbus.user_account -->
+		select *	from tb_role;
+       
+	</select> 
+	<resultMap type="org.great.entity.Role" id="rolelist">
+	 <id property="role_id" column="role_id"/>
+	
+	 <result property="role_name" column="role_name"/>
+	 
+	
+	</resultMap>
+	
+	
+	
+
+	    <delete id="deleterolebyid" parameterType="int" >
+        delete from tb_role where role_id = #{rid}
+    </delete> 
+    
+    <insert id="insertrole" parameterType="org.great.entity.Role" >
+       insert into tb_role(role_id,role_name) values (#{role.role_id},#{role.role_name})
+    </insert> 
+    
+    <update id="updaterolebyid"  parameterType="org.great.entity.Role">
+        update tb_role set role_name=#{role_name}
+         where role_id = #{role_id}
+    </update>  
+ 
+ 
+  <select id="findroleinfo" parameterType="int"
+		resultMap="roleinfo">
+	
+		select * from tb_role
+		where role_id = #{rid} 
+		
+		
+       
+	</select> 
+	<resultMap type="org.great.entity.Role" id="roleinfo">
+	 <id property="role_id" column="role_id"/>
+	
+	 <result property="role_name" column="role_name"/>
+	 
+	 
+	 <!--  <association property="role" column="role_id" javaType="org.great.entity.Role">
+	   <id property="role_id" column="role_id" />
+	   <result property="role_name" column="role_name" />
+	
+	 </association>  -->
+	
+	</resultMap> 
+ 
+   
+	
+	
+	
+	 <select id="specificfind" parameterType="org.great.entity.Role"
+		resultMap="roledetail">
+	
+		select tr.role_name from tb_role tr
+		where role_id = #{rid}
+		
+		
+		  
+		  
+		  
+	  
+       
+	</select> 
+	<resultMap type="org.great.entity.Role" id="roledetail">
+	 <id property="role_id" column="role_id"/>
+	
+	 <result property="role_name" column="role_name"/>
+	
+	 
+	 <!--  <association property="role" column="role_id" javaType="org.great.entity.Role"> 
+ 	   <id property="role_id" column="role_id" /> 
+	   <result property="role_name" column="role_name" /> 
+	
+	 </association>  -->
+	
+	</resultMap> 
+	
+	
+	
+	
+	
+	
+	
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+</mapper>
+	

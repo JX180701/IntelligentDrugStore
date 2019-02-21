@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="org.great.mapper.PurchaseMapper">
+	<insert id="addPurchase" parameterType="org.great.entity.Purchase">
+		insert into tb_purchase
+		(drug_id,user_id,purchase_supplier,purchase_num,purchase_price,purchase_date)
+		values(#{drug_id,jdbcType=INTEGER},#{user_id,jdbcType=INTEGER},#{purchase_supplier,jdbcType=VARCHAR},#{purchase_num,jdbcType=VARCHAR},#{purchase_price,jdbcType=VARCHAR},#{purchase_date,jdbcType=VARCHAR})
+	</insert>
+
+	<select id="findPurchase" parameterType="hashmap"
+		resultMap="purchaseMap">
+		select * from (select * from tb_purchase
+			<where>
+			<if test="date1 != null">
+				purchase_date &gt;= #{date1}
+			</if>
+			<if test="date2 != null">
+				and purchase_date &lt;= #{date2}
+			</if>
+		</where>
+
+		)p left join tb_user u on p.user_id = u.user_id
+		left join tb_drug d on p.drug_id = d.drug_id
+		left join tb_role r on
+		u.role_id = r.role_id
+		left join tb_direction di on d.direction_id =
+		di.direction_id
+		left join tb_price pr on d.price_id = pr.price_id
+		left
+		join tb_type ty on d.type_id = ty.type_id
+	</select>
+
+	<resultMap type="org.great.entity.Purchase" id="purchaseMap">
+		<id property="purchase_id" column="purchase_id" />
+		<result property="drug_id" column="drug_id" />
+		<result property="user_id" column="user_id" />
+		<result property="purchase_supplier" column="purchase_supplier" />
+		<result property="purchase_num" column="purchase_num" />
+		<result property="purchase_price" column="purchase_price" />
+		<result property="purchase_date" column="purchase_date" />
+
+		<association property="user" column="user_id" javaType="org.great.entity.User">
+			<result property="user_name" column="user_name" />
+			<result property="user_pwd" column="user_pwd" />
+			<result property="role_id" column="role_id" />
+			<result property="user_state" column="user_state" />
+			<result property="user_date" column="user_date" />
+			<result property="user_account" column="user_account" />
+
+			<association property="role" column="role_id"
+				javaType="org.great.entity.Role">
+				<result property="role_name" column="role_name" />
+			</association>
+		</association>
+
+		<association property="drug" column="drug_id"
+			javaType="org.great.entity.Drug">
+			<result property="drug_name1" column="drug_name1" />
+			<result property="drug_name2" column="drug_name2" />
+			<result property="drug_unsalable" column="drug_unsalable" />
+			<result property="drug_standard" column="drug_standard" />
+			<result property="drug_dosage" column="drug_dosage" />
+			<result property="drug_unit1" column="drug_unit1" />
+			<result property="drug_unit2" column="drug_unit2" />
+			<result property="drug_formula" column="drug_formula" />
+			<result property="drug_special" column="drug_special" />
+			<result property="drug_antibiotic" column="drug_antibiotic" />
+			<result property="drug_antibiotic" column="drug_insurance" />
+			<result property="drug_state" column="drug_state" />
+			<result property="direction_id" column="direction_id" />
+			<result property="price_id" column="price_id" />
+			<result property="type_id" column="type_id" />
+
+			<!-- <association property="para" column="drug_state" javaType="org.great.entity.Para"> -->
+			<!-- <result property="para_pid" column="para_pid" /> -->
+			<!-- <result property="para_name" column="para_name" /> -->
+			<!-- <result property="para_value" column="para_value" /> -->
+			<!-- </association> -->
+			<association property="direction" column="direction_id"
+				javaType="org.great.entity.Direction">
+				<result property="direction_num" column="direction_num" />
+				<result property="direction_time" column="direction_time" />
+				<result property="direction_describe"
+					column="direction_describe" />
+			</association>
+			<association property="price" column="price_id"
+				javaType="org.great.entity.Price">
+				<result property="price_cost" column="price_cost" />
+				<result property="price_retail" column="price_retail" />
+				<result property="price_ratio" column="price_ratio" />
+				<result property="price_floor" column="price_floor" />
+				<result property="price_invoice" column="price_invoice" />
+				<result property="price_settle" column="price_settle" />
+			</association>
+			<association property="type" column="type_id"
+				javaType="org.great.entity.Type">
+				<result property="type_pid" column="type_pid" />
+				<result property="type_name" column="type_name" />
+			</association>
+		</association>
+
+	</resultMap>
+
+</mapper>
