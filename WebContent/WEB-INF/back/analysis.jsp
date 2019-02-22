@@ -29,7 +29,6 @@ h2{text-align:center}
 #addInsurance div{width:80%;margin-left:450px;margin-top:50px;}
 #addInsurance div input{margin-left:35px;}
 #addInsurance div select{margin-left:35px;}
-
 </style>
 </head>
 
@@ -53,15 +52,23 @@ h2{text-align:center}
 	</div>
 	<script type="text/javascript">
 	 
+	var timeArray = new Array();
+	
+	var chart;
+	var series = [];
+	var titleY = "";
+	var temp
+	 
 	function num(node){
 		
-		var id=$("#textfield").val()
-		alert(id)
+		var id=$("#firstId").val()
+		temp=$("#firstId option:selected").text()
+		
 		if(id==""){
 			alert("请输入药品ID")
 		}
 	
-		if(num!=""){
+		
 			 $.ajax({
 		          url: "<%=path%>/drugstore/checkAnalysis.action",
 		          type: "POST",
@@ -69,10 +76,43 @@ h2{text-align:center}
 		            "drug":id
 		          },    
 		          success: function(data) {
-		            $("#price").html(data)
+		        	var countArray = new Array();
+		        	var symbol=new Array();
+					redata=JSON.parse(data);
+					 for(var j=0;j<redata.length;j++){
+						  if(j!=redata.length-1){
+							  if(redata[j]!=null){
+								  
+						  	countArray.push(parseInt(redata[j]));
+							  }else{
+								  countArray.push(0)
+							  }
+						  }else{
+							  array={
+						            y: parseInt(redata[j]),
+						            marker: {
+						                symbol: 'url(https://www.highcharts.com/samples/graphics/sun.png)'
+						            }
+							  };
+						            countArray.push(array);     
+						  }
+					  } 
+					 
+					 
+					 series[0] = {
+							 name:temp,
+						     marker: {
+						         symbol: 'circle'
+						     },
+						     data: countArray 
+						  };
+
+
+					
+		            drawLine()
 		          }
 		        });
-		}
+	
 	}
 	
 	
@@ -83,115 +123,43 @@ h2{text-align:center}
 
 
 		<script type="text/javascript">
-
-Highcharts.chart('container', {
-
-    chart: {
-        scrollablePlotArea: {
-            minWidth: 700
-        }
-    },
-
-    data: {
-        csvURL: 'https://cdn.jsdelivr.net/gh/highcharts/highcharts@v7.0.0/samples/data/analytics.csv',
-        beforeParse: function (csv) {
-            return csv.replace(/\n\n/g, '\n');
-        }
-    },
-
-    title: {
-        text: '销量预测'
-    },
-
-    subtitle: {
-        text: 'Source: Google Analytics'
-    },
-
-    xAxis: {
-        tickInterval: 7 * 24 * 3600 * 1000, // one week
-        tickWidth: 0,
-        gridLineWidth: 1,
-        labels: {
-            align: 'left',
-            x: 3,
-            y: -3
-        }
-    },
-
-    yAxis: [{ // left y axis
-        title: {
-            text: null
-        },
-        labels: {
-            align: 'left',
-            x: 3,
-            y: 16,
-            format: '{value:.,0f}'
-        },
-        showFirstLabel: false
-    }, { // right y axis
-        linkedTo: 0,
-        gridLineWidth: 0,
-        opposite: true,
-        title: {
-            text: null
-        },
-        labels: {
-            align: 'right',
-            x: -3,
-            y: 16,
-            format: '{value:.,0f}'
-        },
-        showFirstLabel: false
-    }],
-
-    legend: {
-        align: 'left',
-        verticalAlign: 'top',
-        borderWidth: 0
-    },
-
-    tooltip: {
-        shared: true,
-        crosshairs: true
-    },
-
-    plotOptions: {
-        series: {
-            cursor: 'pointer',
-            point: {
-                events: {
-                    click: function (e) {
-                        hs.htmlExpand(null, {
-                            pageOrigin: {
-                                x: e.pageX || e.clientX,
-                                y: e.pageY || e.clientY
-                            },
-                            headingText: this.series.name,
-                            maincontentText: Highcharts.dateFormat('%A, %b %e, %Y', this.x) + ':<br/> ' +
-                                this.y + ' sessions',
-                            width: 200
-                        });
-                    }
-                }
-            },
-            marker: {
-                lineWidth: 1
-            }
-        }
-    },
-
-    series: [{
-        name: 'All sessions',
-        lineWidth: 4,
-        marker: {
-            radius: 4
-        }
-    }, {
-        name: 'New users'
-    }]
-});
-
+		
+		$(document).ready(function(){
+            
+		    drawLine()
+		}); 
+		
+		function drawLine(){
+			Highcharts.chart('container', {
+			    chart: {
+			        type: 'line'
+			    },
+			    title: {
+			        text: temp+'销量预测'
+			    },
+			    subtitle: {
+			        text: 'Source: IntelligentDrugStore'
+			    },
+			    xAxis: {
+			        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+			    },
+			    yAxis: {
+			        title: {
+			            text: '单位'
+			        }
+			    },
+			    plotOptions: {
+			        line: {
+			            dataLabels: {
+			                enabled: true
+			            },
+			            enableMouseTracking: false
+			        }
+			    },
+			    series: series
+			});
+		}
+		
 		</script>
 </body>
 </html>

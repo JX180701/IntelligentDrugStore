@@ -148,21 +148,57 @@ public class DrugStoreHandler {
 		
 		List<Sell> sellList=sellbiz.getSell(drug);
 		List<Double> analysisList=new ArrayList<Double>();
+		
 		List<String> amountlist=new ArrayList<String>();
+		Map<String,String> map=new HashMap<String,String>();
 		for(Sell s:sellList) {
-//			s.getSell_date()
+			String year=s.getSell_date().split("-")[0];
+			String month=s.getSell_date().split("-")[1];
+			if(map.get(year+month)!=null) {
+				int a=Integer.parseInt(map.get(year+month));
+				int b=Integer.parseInt(s.getSell_num());
+				String result=""+(a+b);
+				map.put(year+month, result);
+				
+			}else {
+				map.put(year+month,s.getSell_num() );
+			}
 			analysisList.add(Double.valueOf(s.getSell_num()));
 		}
+		
+		amountlist.add(map.get("201901"));
+		amountlist.add(map.get("201902"));
+		amountlist.add(map.get("201903"));
+		amountlist.add(map.get("201904"));
+		amountlist.add(map.get("201905"));
+		amountlist.add(map.get("201906"));
+		amountlist.add(map.get("201907"));
+		amountlist.add(map.get("201908"));
+		amountlist.add(map.get("201909"));
+		amountlist.add(map.get("201910"));
+		amountlist.add(map.get("201911"));
+		
 		Double modulus=0.40;
 		Double predict=0.00;
-		int result=0;
+		
+		predict=Analysis.getExpect(analysisList,modulus);
+		System.out.println(predict);
+		amountlist.add(String.format("%.1f", predict));
 		ObjectMapper om = new ObjectMapper();
-		predict=Analysis.getExpect(analysisList,1,modulus);
-		if(predict!=null) {
-			System.out.println(predict);
-			result=predict.intValue();
+		String result = null;
+		try {
+			result = om.writeValueAsString(amountlist);
+		} catch (JsonGenerationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		return ""+result;	
+		return result;	
 		}
 	
 	@RequestMapping(value = "/checkLibrary.action", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
@@ -209,24 +245,39 @@ public class DrugStoreHandler {
 				}
 			}	
 		}
-		
+		String r=null;
 		for (String batch:resultMap.keySet()) {
 			drugstorebiz.sendDrug(batch, resultMap.get(batch));
+			DrugStore d =drugstorebiz.findDrugStoreByBatch(batch);
+			
+			if(d.getDrugstore_state().equals("停用")) {
+				r="fail";
+			}
 		}
 		List<Taboo> tabooList=taboobiz.findTaboo(drug_id);
+		
 		
 		try {
 			response.setContentType("text/html;charset=gb2312");
 			PrintWriter out=response.getWriter();
-			out.println("<script>");
-			out.println("alert('发药成功')");
-			for(Taboo t:tabooList) {
-				s=t.getTaboo_discribe().trim();
-				s="alert("+"'药品禁忌："+s+"'"+")"+";";
-				out.println(s);
+			if(r!="fail") {
+				out.println("<script>");
+				out.println("alert('发药成功')");
+				for(Taboo t:tabooList) {
+					s=t.getTaboo_discribe().trim();
+					s="alert("+"'药品禁忌："+s+"'"+")"+";";
+					out.println(s);
+				}
+				out.println("location.href = '/pharmacy/drugstore/distribute.action';");
+			    out.println("</script>");
+			}else {
+				out.println("<script>");
+				out.println("alert('发药失败，该药品已被停用')");
+				
+				out.println("location.href = '/pharmacy/drugstore/distribute.action';");
+			    out.println("</script>");
 			}
-			out.println("location.href = '/pharmacy/drugstore/distribute.action';");
-		    out.println("</script>");
+			
 		    
 		    out.flush();
 		    out.close();
