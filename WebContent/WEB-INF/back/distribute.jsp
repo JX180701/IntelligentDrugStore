@@ -27,27 +27,34 @@ h2{text-align:center}
 <body>
 <div id="addInsurance">
 	<h2>发药</h2>
-	<form action="<%=path%>/drugstore/sendDrug.action" method="post" >
-		<div>药品ID:&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="drug_id" id="textfield" ></div>
-		<div>药品价格：<label id="price"></label><input type="hidden" name="price" id="hidden"></input></div>
+	<form action="<%=path%>/drugstore/sendDrug.action" method="post" onSubmit="return confirm();" >
+<!-- 	<div class="control-group"> -->
+<!-- 									<label class="control-label">药品名</label> -->
+									
+<!-- 								</div> -->
+<!-- 		<div>药品ID: <input type="text" name="drug_id" id="textfield" ></div> -->
+		<div >
+										药品名：&nbsp;&nbsp;&nbsp;<select name="drug_id" style="width: 100px;"
+											id="textfield">
+											<c:forEach items="${drugList}" var="type" varStatus="st">
+												<option value="${type.drug_id}">${type.drug_name1}</option>
+											</c:forEach>
+										</select>
+									</div>
 		<div>发药数量：<input type="text" name="amount" id="textfield3" onblur="num(this)">
 					<label id="caution"></label></div>
+		<div>药品总价：<label id="price"></label><input type="hidden" name="price" id="hidden"></input></div>
 	    <div id="sub"><input type="submit" value="提交">&nbsp;<input type="reset" value="重置"></div>
 	</form>
 	</div>
 	<script type="text/javascript">
-	 
+	var r="";
 	function num(node){
 		var num=node.value
 		var id=$("#textfield").val()
-		reg=/^[-+]?\d*$/;
+		
 		if(id==""){
 			alert("请输入药品ID")
-		}else if(!reg.test(id)){
-			
-			alert("id必须为数字")
-		}else if (!reg.test(num)){
-				alert("数量必须为数字")
 		}
 	
 		if(num!=""){
@@ -57,21 +64,40 @@ h2{text-align:center}
 		          dataType: 'json', 
 		          data: {
 		            "amount": num,
-		            "drug":id
-		            
-		          },
-		         
-		          success: function(data) {
-		            
-		            
-		            $("#caution").html('剩余'+data.sum)
-		            $("#price").html(data.price)
-		             $("#hidden").val(data.price)
-		          }
-		          
+		            "drug":id    
+		          },		         
+		          success: function(data) {   	  
+		        	r=data.sum
+		            $("#caution").html('剩余'+data.sum+data.unit)
+		            var num=$("#textfield3").val()
+		            var unit=data.price
+		            var result=parseInt(num)*parseInt(unit)
+		            $("#price").html(result+"元")
+		            $("#hidden").val(data.price)
+		          }  
 		        });
 		}
 	}
+		
+		function confirm(){
+			var temp=$("#caution").html()
+			alert(temp)
+			var input=$("#textfield3").val()
+			if(temp!=""&&input!=""){			
+			    var oldnum=parseInt(input)
+			    var newnum=parseInt(r)
+			    if(oldnum>newnum){
+			    	alert("超出最大发药数量")
+			    	return false;
+			    }else{
+			    	return true;
+			    }
+			} 
+			alert("请输入数量")　
+			return false
+		}
+	
+	
 	
 	
 	</script>

@@ -19,5 +19,7 @@ public interface DrugStoreBiz {
 	public int addDrugStore(DrugStore drugStore);
 	public boolean changeNumber(String batch,String result,String state);
 	public List<DrugStore> findExpire(String date);
+	public DrugStore findDrugStoreByBatch(String batch);
 	public List<DrugStore> findDrugStoreByDrugId(int drug_id);
+
 }

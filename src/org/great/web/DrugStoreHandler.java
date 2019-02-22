@@ -64,8 +64,9 @@ public class DrugStoreHandler {
 	private SellBiz sellbiz;
 
 	@RequestMapping(value = "/dispatcher.action")
-	public String Dispatcher(HttpServletRequest request) {
-
+	public String Dispatcher(HttpServletRequest request,HttpSession session) {
+		List<Drug> drugList = drugbiz.findAllDrug();
+		session.setAttribute("drugList", drugList);
 		return "distribute";
 
 	}
@@ -73,6 +74,7 @@ public class DrugStoreHandler {
 	@RequestMapping(value = "/checkNum.action", method = RequestMethod.POST ,produces = "application/json;charset=utf-8" )
 	@ResponseBody
 	public String CheckNum(HttpServletRequest request, HttpServletResponse response, String amount, String drug ) {
+		
 		List<DrugStore> drugList=drugstorebiz.findById(Integer.parseInt(drug));
 		int sum=0;
 		
@@ -99,7 +101,8 @@ public class DrugStoreHandler {
 		 Map<String, String> map = new HashMap<String, String>();
 		 
 		map.put("price", price+"元");
-		map.put("sum", ""+sum+unit);
+		map.put("sum", ""+sum);
+		map.put("unit", unit);
 		 
 		 String result="";
 		 ObjectMapper om = new ObjectMapper();
@@ -116,6 +119,14 @@ public class DrugStoreHandler {
 			e.printStackTrace();
 		}
 		return  result;	
+		}
+	
+	@RequestMapping(value = "/checkDrugStore.action", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String checkDrugStore(HttpServletRequest request, HttpServletResponse response,  String drug ) {
+		DrugStore d=drugstorebiz.findDrugStoreByBatch(drug);
+		String sum=d.getDrugstore_num();
+		return ""+sum;	
 		}
 	
 	@RequestMapping(value = "/checkBatch.action", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
@@ -137,13 +148,15 @@ public class DrugStoreHandler {
 		
 		List<Sell> sellList=sellbiz.getSell(drug);
 		List<Double> analysisList=new ArrayList<Double>();
+		List<String> amountlist=new ArrayList<String>();
 		for(Sell s:sellList) {
+//			s.getSell_date()
 			analysisList.add(Double.valueOf(s.getSell_num()));
 		}
 		Double modulus=0.40;
 		Double predict=0.00;
 		int result=0;
-		
+		ObjectMapper om = new ObjectMapper();
 		predict=Analysis.getExpect(analysisList,1,modulus);
 		if(predict!=null) {
 			System.out.println(predict);
@@ -170,7 +183,7 @@ public class DrugStoreHandler {
 	
 	@SystemLog(operationType = "药房管理", operationName = "发药")
 	@RequestMapping(value = "/sendDrug.action")
-	public String sendDrug(HttpServletRequest request,HttpServletResponse response,String drug_id,String amount,String price) {
+	public void sendDrug(HttpServletRequest request,HttpServletResponse response,String drug_id,String amount,String price) {
 		List<DrugStore> drugList=drugstorebiz.findById(Integer.parseInt(drug_id));
 		int num=Integer.parseInt(amount);
 		int result=(-1)*num;
@@ -212,6 +225,7 @@ public class DrugStoreHandler {
 				s="alert("+"'药品禁忌："+s+"'"+")"+";";
 				out.println(s);
 			}
+			out.println("location.href = '/pharmacy/drugstore/distribute.action';");
 		    out.println("</script>");
 		    
 		    out.flush();
@@ -220,7 +234,7 @@ public class DrugStoreHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return "distribute";
+		
 	}
 	@RequestMapping(value = "/distribute.action")
 	public String Distribute(HttpServletRequest request) {
