@@ -51,30 +51,9 @@
 						<div class="widget-title">
 							<span class="icon"><i class="icon-th"></i></span>
 							<h5>药库库存预警设置</h5>
+							<button id="emailQuartz" style="float:right;margin-right:50px;">启用药品低限邮件提示</button>
 						</div>
 						<div class="widget-content nopadding">
-
-							<!-- 查询条件 -->
-							<div>
-							<form action="<%=path%>taboo/searchConditionTaboo.action"
-								method="post">
-<!-- 								<input type="text" name="type_name" id="type_name"> -->
-								<select name="drug_id1" id="drug_id1" style="width:100px;">
-								<option value="0">无</option>
-									<c:forEach items="${drugs }" varStatus="i" var="drug">
-<%-- 										<c:forEach items="${taboos}" var="taboo" varStatus="st"> --%>
-<%-- 											<c:if test="${(drug.drug_id == taboo.drug_id1) || (drug.drug_id == taboo.drug_id2)}"> --%>
-												<option value="${drug.drug_id}">${drug.drug_name1}</option>
-<%-- 											</c:if> --%>
-<%-- 										</c:forEach> --%>
-									</c:forEach>
-								</select>
-								<button type="submit" class="btn">
-									<i class="icon-search">查询</i>
-								</button>
-								<a style="float:right;margin-right:20px;"><i class="icon-download-alt">导出数据到Excel</i></a>
-							</form>
-							</div>
 							<table
 								class="table table-bordered data-table table-striped with-check">
 								<thead>
@@ -121,6 +100,20 @@
 <script src="${pageContext.request.contextPath}/js/matrix.js"></script>
 <script src="${pageContext.request.contextPath}/js/matrix.tables.js"></script>
 <script type="text/javascript">
+	$("#emailQuartz").on("click",function(){
+		$.ajax({
+			url:"<%=path %>quartz/auto.action",
+			type:"post",
+			success:function(data){
+				if(data=="close"){
+					alert("定时器已经关闭了");
+				}else{
+					alert("定时器已经启动了");
+				}
+			}
+		});
+	});
+
 	function editText(id){
 		var elem = "#"+id;
 		$(elem).attr("contentEditable","true");
@@ -134,13 +127,16 @@
 		$(elem).attr("contentEditable","false");
 		
 		//如果修改后的值为空，则不提交，修改值为原来的值
-		var changeValue = $(elem).text();
+		var value = $(elem).text();
+		var changeValue = $.trim(value);
 		var tempValue = $("#tempValue").text();
+		
 		if(changeValue==""){
 			alert("输入不能为空");
 			$(elem).text(tempValue);
 			return;
 		}
+
 		//修改后的值和原来的值相同，则不做变化
 		if(changeValue==tempValue){
 			return;
@@ -169,11 +165,21 @@
 			return;
 		}
 		
-		if(changeValue%1!=0){
+		if(changeValue.indexOf(".")>0){
 			alert("请输入整数");
 			$(elem).text(tempValue);
 			return;
 		}
+		
+		if(changeValue.length>1){
+			if(changeValue[0]==0){
+				alert("请输入正确的数字");
+				$(elem).text(tempValue);
+				return;
+			}
+		}
+		
+		$(elem).text(tempValue);
 		
 		//提交修改后的值
 		$.ajax({
@@ -191,16 +197,5 @@
 		}
 	});
 	}
-</script>
-<script type="text/javascript">
-	var html = "<html><head><meta charset='utf-8' /></head><body>"
-			+ document.getElementsByTagName("table")[0].outerHTML
-			+ "</body></html>";
-	var blob = new Blob([ html ], {
-		type : "application/vnd.ms-excel"
-	});
-	var a = document.getElementsByTagName("a")[0];
-	a.href = URL.createObjectURL(blob);
-	a.download = "药品库存.xls";
 </script>
 </html>
