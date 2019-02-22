@@ -60,7 +60,7 @@
 	<select id="getSellList" resultType="org.great.entity.Sell">
 	select * from tb_sell where drug_id=#{drug_id}
 	
-	ORDER BY sell_date desc
+	ORDER BY sell_date ASC
 	</select>
 	
 </mapper>

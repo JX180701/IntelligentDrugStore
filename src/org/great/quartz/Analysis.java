@@ -19,6 +19,7 @@ public class Analysis {
         
         for (Double data :list) {
             lastIndex = modulus * data + modulusLeft * lastIndex;
+            System.out.println(data);
            
         }
         Double result=list.get(list.size()-1)*modulus+modulusLeft*lastIndex;
