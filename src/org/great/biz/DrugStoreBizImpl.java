@@ -47,7 +47,7 @@ public class DrugStoreBizImpl implements DrugStoreBiz {
 	@Override
 	public List<DrugStore> findById(int id) {
 		// TODO Auto-generated method stub
-		return drugStoreMapper.findDrugStoreById(id);
+		return drugStoreMapper.findDrugStoreByDrugId(id);
 	}
 	@Override
 	public boolean sendDrug(String batch, String amount) {
@@ -103,9 +103,17 @@ public class DrugStoreBizImpl implements DrugStoreBiz {
 		// TODO Auto-generated method stub
 		return drugStoreMapper.selectExpire(date);
 	}
+
+	@Override
+	public DrugStore findDrugStoreByBatch(String batch) {
+		// TODO Auto-generated method stub
+		return drugStoreMapper.findDrugStoreByBatch(batch);
+	}
+
 	@Override
 	public List<DrugStore> findDrugStoreByDrugId(int drug_id) {
 		// TODO Auto-generated method stub
-		return drugStoreMapper.findDrugStoreByDrugId(drug_id);
+		return drugStoreMapper.findDrugStoreById(drug_id);
 	}
+
 }

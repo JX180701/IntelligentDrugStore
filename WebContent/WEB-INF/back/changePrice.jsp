@@ -157,13 +157,16 @@ function changeBackColor_over(div){
 			var drug_id=node.parentNode.parentNode.childNodes[1].childNodes[0].innerHTML
 			var oldprice = node.parentNode.parentNode.childNodes[15].childNodes[0].value
 			var newprice = node.parentNode.parentNode.childNodes[7].childNodes[0].innerHTML
-			
-			
+			var cost = node.parentNode.parentNode.childNodes[5].childNodes[0].innerHTML
+			costprice=parseInt(cost);
+			retail=parseInt(newprice);
 			if(oldprice==newprice){
 				alert("请重新输入价格")
+			}if(costprice>retail){
+				alert("小于成本价")
 			}else{
 				node.href = "<%=path%>/requisition/changePrice.action?oldprice="+oldprice+"&newprice="+newprice+"&drug_id="+drug_id+"&price_id="+price_id
-				alert("调价申请已提交")
+				
 			}
 			
 

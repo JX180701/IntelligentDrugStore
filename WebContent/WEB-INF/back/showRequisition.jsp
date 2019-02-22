@@ -50,7 +50,7 @@
 								药品ID: <input type="text" name="drug" id="textfield1" value="0" style="width:110px">
 								申请状态：<select name="requisition_state" id="select" style="width:110px"><option>-选择状态-</option>
 									<option>待审核</option>
-									<option>审核通过</option>
+									<option>通过</option>
 									<option>未通过</option></select> 申请类型：<select name="requisition_type"
 									id="select" style="width:110px"><option>-选择类型-</option>
 									<option>药品请领</option>
@@ -81,11 +81,11 @@
 										<c:forEach items="${requestList}" var="r">
 											<tr class="gradeA" id="${r.drug_id }">
 
-												<td><p contenteditable="true">${r.drug_id }</p></td>
+												<td><p >${r.drug_id }</p></td>
 												<td><p contenteditable="true">${r.requisition_batch}</p></td>
 												<td><p contenteditable="true">${r.requisition_num}</p></td>
-												<td><p contenteditable="false">${r.requisition_state }</p></td>
-												<td><p contenteditable="false">${r.requisition_date1 }</p></td>
+												<td><p >${r.requisition_state }</p></td>
+												<td><p >${r.requisition_date1 }</p></td>
 												<td><p contenteditable="true">${r.requisition_type }</p></td>
 												<td><p contenteditable="true">${r.requisition_discribe}</p></td>
 												<td><input type="hidden" value="${r.requisition_id}"><a href="" style="margin-left: 0px"

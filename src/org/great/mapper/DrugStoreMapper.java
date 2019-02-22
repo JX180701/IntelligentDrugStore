@@ -22,5 +22,7 @@ public interface DrugStoreMapper
 	public DrugStore findDrugStoreByDrugNameAndBatch(DrugStore drugStore);
 	public int updateNum(String batch,String result,String state);
 	public List<DrugStore> selectExpire(String date);
+	public DrugStore findDrugStoreByBatch(String batch);
 	public List<DrugStore> findDrugStoreByDrugId(int drug_id);
+
 }

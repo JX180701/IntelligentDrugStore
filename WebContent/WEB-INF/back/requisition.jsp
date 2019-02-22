@@ -20,6 +20,7 @@ h2{text-align:center}
 #addInsurance div input{margin-left:35px;}
 #addInsurance div select{margin-left:35px;}
 #addInsurance div textarea{margin-left:35px;}
+#addInsurance div select{margin-left:35px;}
 </style>
 <script src="${pageContext.request.contextPath}/js/jquery.validate.js"></script>
 <script type="text/javascript" src="<%=basePath %>js/jquery.min.js"></script>
@@ -30,9 +31,23 @@ h2{text-align:center}
 <body>
 <div id="addInsurance">
 	<h2>药品申请</h2>
-	<form action="<%=path%>/requisition/addRequisition.action?type=" method="post" id="form"  >
-		<div>药品ID:&nbsp;&nbsp; <input type="text" name="drug_id" id="textfield " ></div>
-		<div>申请数量:<input type="text" name="requisition_num" id="textfield3" onblur="num(this)"><label id="caution"></label></div>
+	<form action="<%=path%>/requisition/addRequisition.action?type=" method="post" id="form" onSubmit="return confirm();" >
+<!-- 	<div class="control-group"> -->
+<!-- 									<label class="control-label">药品名</label> -->
+<!-- 									<div class="controls"> -->
+										
+<!-- 									</div> -->
+<!-- 								</div> -->
+<div>
+								药品名:<select name="drug_id" style="width: 100px;"
+											id="firstId">
+											<c:forEach items="${drugList}" var="type" varStatus="st">
+												<option value="${type.drug_id}">${type.drug_name1}</option>
+											</c:forEach>
+										</select>
+										</div>
+<!-- 		<div>药品ID:&nbsp;&nbsp; <input type="text" name="drug_id" id="textfield " ></div> -->
+		<div>申请数量:<input type="text" name="requisition_num" id="textfield3" onblur="num(this)"><label id="caution" ></label></div>
 		<div>申请类型:<label id="select" style="margin-left:35px">药品请领</label><input type="hidden" name="requisition_type" value="药品请领"></div>
 		<div>申请描述:<textarea name="requisition_discribe" id="textarea" cols="45" rows="5"></textarea><input type="hidden" name="requisition_batch" value="待审核后确定"></div>
 	    <div id="sub"><input type="submit" value="提交" >&nbsp;<input type="reset" value="重置"></div>
@@ -40,12 +55,12 @@ h2{text-align:center}
 	</div>
 	<script type="text/javascript">
 	
-	
+	var result="";
 	 
 	function num(node){
 		var num=node.value
-		var id=node.parentNode.parentNode.childNodes[1].childNodes[1].value
-		
+		var id=$("#firstId").val()
+		alert(id)
 		if(id==""){
 			alert("请输入药品id")
 			
@@ -59,7 +74,7 @@ h2{text-align:center}
 		            "id": id
 		          },   
 		          success: function(data) {
-		               
+		        	  result=data;
 		            $("#caution").html('药库剩余'+data)    
 		          }
 		        });
@@ -75,12 +90,23 @@ h2{text-align:center}
 			requisition_num:{
 				required:true,
 				number:15
-				
 			},
 		}
 	});
 	
-	 
+	function confirm(){
+		var temp=$("#caution").html()
+		if(temp!=""){
+			var input=$("#textfield3").val()
+		    var oldnum=parseInt(input)
+		    var newnum=parseInt(result)
+		    if(oldnum>newnum){
+		    	alert("超出最大申请数量")
+		    	return false;
+		    }
+		}
+		return true;
+	}
 	
 	</script>
 </body>

@@ -29,43 +29,77 @@ h2{text-align:center}
 <body>
 <div id="addInsurance">
 	<h2>药品申请</h2>
-	<form action="<%=path%>/requisition/addRequisition.action" method="post" id="form" >
-		<div>药品ID:&nbsp;&nbsp; <input type="text" name="drug_id" id="textfield " onblur="batch(this)"><label id="caution"></label></div>
-		<div>申请批次:<input type="text" name="requisition_batch" id="textfield2"></div>
-		<div>申请数量:<input type="text" name="requisition_num" id="textfield3"></div>
+	<form action="<%=path%>/requisition/addRequisition.action" method="post" id="form" onSubmit="return confirm();" >
+<!-- 	<div class="control-group"> -->
+<!-- 									<label class="control-label">药品名</label> -->
+									
+<!-- 								</div> -->
+								<div >
+										药品名：<select name="drug_id" style="width: 100px;"
+											id="firstId" onchange="batch(this)">
+											<c:forEach items="${drugList}" var="type" varStatus="st">
+												<option value="${type.drug_id}">${type.drug_name1}</option>
+											</c:forEach>
+										</select>
+									</div>
+<!-- 		<div>药品ID:&nbsp;&nbsp; <input type="text" name="drug_id" id="textfield " onblur="batch(this)"><label id="caution"></label></div> -->
+		<div>申请批次:<select name="requisition_batch" style="width: 100px;" id="textfield2"></select></div>
+		<div>申请数量:<input type="text" name="requisition_num" id="textfield3" onblur="num(this)"><label id="caution"></label></div>
 		<div>申请类型:<select name="requisition_type" id="select"><option>-选择类型-</option><option>药品退库</option><option>药品报损</option>  </select></div>
 		<div>申请描述:<textarea name="requisition_discribe" id="textarea" cols="45" rows="5"></textarea></div>
 	    <div id="sub"><input type="submit" value="提交">&nbsp;<input type="reset" value="重置"></div>
 	</form>
 	</div>
 	<script type="text/javascript">
-	 
+	 var r="";
 	function batch(node){
 		var id=node.value
-		reg=/^[-+]?\d*$/;
-		if(id==""){
-			alert("请输入药品ID")
-		}else if(!reg.test(id)){
-			
-			alert("id必须为数字")
-		}else{
-			 $.ajax({
-		          url: "<%=path%>/drugstore/checkBatch.action",
-		          type: "POST",
+		$.ajax({
+		  url: "<%=path%>/drugstore/checkBatch.action",
+		  type: "POST",
 
-		          data: {
-		            "drug":id
-		          },
+		  data: {
+		     "drug":id
+          },
 		         
-		          success: function(data) {
-		            
-		            
-		            $("#caution").html('该药品批次'+data)
-		            
-		          }
+		  success: function(data) {
+			 
+			  var arr=data.split(',');
+			  
+			  var html = "";
+			for (var i = 0; i < arr.length; i++) {
+											//每一个div还有鼠标移出、移入点击事件
+				html += "<option value='"+arr[i]+"'>" + arr[i] + "</option>";
+				}
+				$("#textfield2").html(html);
+			  
+			  
+		  }
 		          
-		        });
-		}
+	});
+		
+	}
+	
+	function  num(node){
+		var batch=$("#textfield2").val();
+		
+		alert(batch)
+		
+		$.ajax({
+		  url: "<%=path%>/drugstore/checkDrugStore.action?op=batch",
+		  type: "POST",
+
+		  data: {
+		     "drug":batch
+          },
+		         
+		  success: function(data) {
+			 r=data;
+			alert(data)
+			$("#caution").html("当前批次药库剩余"+data);
+		  }
+		          
+	});
 	}
 	
 	$("#form").validate({//表单id
@@ -84,6 +118,23 @@ h2{text-align:center}
 			},
 		}
 	});
+	
+	
+	function confirm(){
+		var temp=$("#caution").html()
+		if(temp!=""){
+			var input=$("#textfield3").val()
+		    var oldnum=parseInt(input)
+		    alert(oldnum)
+		    var newnum=parseInt(r)
+		    alert(r)
+		    if(oldnum>newnum){
+		    	alert("超出最大申请数量")
+		    	return false;
+		    }
+		}
+		return true;
+	}
 	</script>
 </body>
 </html>
