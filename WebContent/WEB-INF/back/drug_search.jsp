@@ -133,7 +133,7 @@ form label {
 						</div>
 					</div>
 					<form action="<%=path%>excel/importDrug.action" enctype="multipart/form-data" method="post">
-							上传Excel文件导入数据：<input type="file" name="file"><br />
+							上传Excel文件导入数据：<input type="file" name="file" accept=".xlsx"><br />
 							<input type="submit" value="上传">*上传的Excel文件格式为xlsx，需按照一定格式填写内容
 						</form>
 				</div>
