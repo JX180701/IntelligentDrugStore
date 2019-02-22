@@ -20,4 +20,6 @@ public interface DrugMapper {
 	public List<Drug> condPrice(Map cond);
 	public int updateLibraryThreshold(int drug_id,String drug_threshold_library);
 	public int updateDrugThresholdStore(Drug drug);
+	public List<Drug> findAll();
+	
 }

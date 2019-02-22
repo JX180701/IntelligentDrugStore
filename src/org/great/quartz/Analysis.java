@@ -10,19 +10,18 @@ public class Analysis {
      * @param modulus 平滑系数
      * @return 预测值
      */
-    public static Double getExpect(List<Double> list, int year, Double modulus ) {
+    public static Double getExpect(List<Double> list, Double modulus ) {
         if (list.size() < 10 || modulus <= 0 || modulus >= 1) {
             return null;
         }
         Double modulusLeft = 1 - modulus;
         Double lastIndex = list.get(0);
-        Double lastSecIndex = list.get(0);
+        
         for (Double data :list) {
             lastIndex = modulus * data + modulusLeft * lastIndex;
-            lastSecIndex = modulus * lastIndex + modulusLeft * lastSecIndex;
+           
         }
-        Double a = 2 * lastIndex - lastSecIndex;
-        Double b = (modulus / modulusLeft) * (lastIndex - lastSecIndex);
-        return a + b * year;
+        Double result=list.get(list.size()-1)*modulus+modulusLeft*lastIndex;
+        return result ;
     }
 }

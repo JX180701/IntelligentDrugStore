@@ -67,9 +67,9 @@ public class RequisitionHandler
 	
 	@RequestMapping(value = "/Requisition.action")
 	public String Requisition(HttpServletRequest request,HttpSession session) {
-//		SendEmail sendEmail=new SendEmail();
-//		sendEmail.send();
+
 		List<Drug> drugList = drugbiz.findAllDrug();
+		
 		
 		String page=request.getParameter("page");
 		session.setAttribute("drugList", drugList);
