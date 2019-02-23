@@ -43,12 +43,16 @@
 	</bean>
 	
 <!-- 	配置定时器 -->
-	<task:annotation-driven />
-	<context:annotation-config />
-	<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
+<!-- 	<task:annotation-driven /> -->
+<!-- 	<context:annotation-config /> -->
+<!-- 	<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" /> -->
 	<context:component-scan base-package="org.great.quartz" />
+	<task:executor id="executor" pool-size="3"/>
+	<task:scheduler id="scheduler" pool-size="3"/>
+	<task:annotation-driven executor="executor" scheduler="scheduler"/>
 	
 	<aop:aspectj-autoproxy/>
 	<context:component-scan base-package="org.great.aop"/>
+	<context:component-scan base-package="org.great" />
 
 </beans>		
