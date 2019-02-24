@@ -129,6 +129,8 @@ public class ExcelUtil {
 			int firstRowNum = sheet.getFirstRowNum();
 			// 获取sheet中最后一行行号
 			int lastRowNum = sheet.getLastRowNum();
+			System.out.println(firstRowNum);
+			System.out.println(lastRowNum);
 
 			// 获取该实体所有定义的属性 返回Field数组
 			java.lang.reflect.Field[] entityName = this.findEntityAllTypeName(obj);
@@ -159,6 +161,10 @@ public class ExcelUtil {
 					m = obj.getClass().getDeclaredMethod(name, entityName[j].getType());
 
 					Cell pname = row.getCell(j);
+					
+					if(pname == null) {
+						break;
+					}
 					
 					// 根据属性类型装入值
 					switch (type) {

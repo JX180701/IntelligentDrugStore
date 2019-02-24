@@ -51,7 +51,7 @@
 						<div class="widget-title">
 							<span class="icon"><i class="icon-th"></i></span>
 							<h5>药库库存预警设置</h5>
-							<button id="emailQuartz" style="float:right;margin-right:50px;">启用药品低限邮件提示</button>
+							<button id="emailQuartz" style="float:right;margin-right:50px;">关闭药品低限邮件提示</button>
 						</div>
 						<div class="widget-content nopadding">
 							<table
@@ -179,7 +179,7 @@
 			}
 		}
 		
-		$(elem).text(tempValue);
+// 		$(elem).text(tempValue);
 		
 		//提交修改后的值
 		$.ajax({
