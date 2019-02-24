@@ -60,7 +60,7 @@ h2{text-align:center}
 	function num(node){
 		var num=node.value
 		var id=$("#firstId").val()
-		alert(id)
+		
 		if(id==""){
 			alert("请输入药品id")
 			

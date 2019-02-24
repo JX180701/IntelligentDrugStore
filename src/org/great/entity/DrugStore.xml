@@ -109,6 +109,12 @@
 
 	</select>
 
+	<select id="findDrugStoreById"
+		resultType="org.great.entity.DrugStore">
+
+		select * from tb_drugstore where drug_id=#{id}
+		ORDER BY validity ASC
+	</select>
 	
 	<select id="selectExpire"
 		resultType="org.great.entity.DrugStore">
@@ -307,13 +313,7 @@
 		(drug_id,purchase_id,batch,validity,drugstore_num,drugstore_threshold,drugstore_state)
 		values(#{drug_id,jdbcType=INTEGER},#{purchase_id,jdbcType=INTEGER},#{batch,jdbcType=VARCHAR},#{validity,jdbcType=VARCHAR},#{drugstore_num,jdbcType=VARCHAR},#{drugstore_threshold,jdbcType=VARCHAR},#{drugstore_state,jdbcType=VARCHAR})
 	</insert>
-	
-	<select id="findDrugStoreByBatch" resultType="org.great.entity.DrugStore">
-	select * from tb_drugstore where batch=#{batch}
-		
-	
-	</select>
-	
+
 	<select id="findDrugStoreByDrugId" resultType="org.great.entity.DrugStore" resultMap="thresholdList">
 		select * from tb_drugstore where drug_id=#{drug_id}
 	</select>
@@ -329,6 +329,4 @@
 		<result property="drugstore_threshold" column="drugstore_threshold" />
 		<result property="drugstore_state" column="drugstore_state" />
 	</resultMap>
-	
-
 </mapper>

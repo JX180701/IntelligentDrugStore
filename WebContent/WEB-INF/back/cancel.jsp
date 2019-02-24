@@ -83,7 +83,7 @@ h2{text-align:center}
 	function  num(node){
 		var batch=$("#textfield2").val();
 		
-		alert(batch)
+		
 		
 		$.ajax({
 		  url: "<%=path%>/drugstore/checkDrugStore.action?op=batch",
@@ -125,9 +125,9 @@ h2{text-align:center}
 		if(temp!=""){
 			var input=$("#textfield3").val()
 		    var oldnum=parseInt(input)
-		    alert(oldnum)
+		    
 		    var newnum=parseInt(r)
-		    alert(r)
+		    
 		    if(oldnum>newnum){
 		    	alert("超出最大申请数量")
 		    	return false;

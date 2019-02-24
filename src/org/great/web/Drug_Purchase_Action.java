@@ -127,7 +127,7 @@ public class Drug_Purchase_Action
 		else
 		{
 			library.setLibrary_num(purchase.getPurchase_num());
-			library.setLibrary_state("Õý³£");
+			library.setLibrary_state("ÆôÓÃ");
 			library.setLibrary_threshold(threshold);
 			library.setValidity(validity);
 			library.setPurchase_id(purchaseList.get(purchaseList.size()-1).getPurchase_id());
