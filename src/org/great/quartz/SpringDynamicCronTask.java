@@ -31,10 +31,9 @@ public class SpringDynamicCronTask implements SchedulingConfigurer {
 	private static final Logger logger = LoggerFactory.getLogger(SpringDynamicCronTask.class);
 	
 	public static String cron;
-	public static ScheduledTaskRegistrar taskRegistrar;
 	
 	public SpringDynamicCronTask() {
-		cron = "0/10 * * * * ?";
+		cron = "0 0/2 * * * ?";
 //		new Thread(new Runnable() {
 //			@Override
 //			public void run() {
@@ -51,8 +50,21 @@ public class SpringDynamicCronTask implements SchedulingConfigurer {
  
 	@Override
 	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-		System.out.println("yes or no");
-		this.taskRegistrar = taskRegistrar;
+		taskRegistrar.addTriggerTask(new Runnable() {
+			@Override
+			public void run() {
+				// 任务逻辑
+				libraryQuartz.overdue();
+			}
+		}, new Trigger() {
+			@Override
+			public Date nextExecutionTime(TriggerContext triggerContext) {
+				// 任务触发，可修改任务的执行周期
+				CronTrigger trigger = new CronTrigger(SpringDynamicCronTask.cron);
+                Date nextExec = trigger.nextExecutionTime(triggerContext);
+                return nextExec;
+			}
+		});
 		
 	}
 }

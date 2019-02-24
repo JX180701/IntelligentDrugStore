@@ -25,23 +25,8 @@ public class QuartzHandler {
 	@RequestMapping("auto.action")
 	@ResponseBody
 	public String autoExaminePass(HttpServletRequest request,String operate) throws SchedulerException, ParseException{
-		SpringDynamicCronTask.cron = "0/5 * * * * ?";
+		SpringDynamicCronTask.cron = "0 0/20 * * * ?";
 		
-		SpringDynamicCronTask.taskRegistrar.addTriggerTask(new Runnable() {
-			@Override
-			public void run() {
-				// 任务逻辑
-				libraryQuartz.overdue();
-			}
-		}, new Trigger() {
-			@Override
-			public Date nextExecutionTime(TriggerContext triggerContext) {
-				// 任务触发，可修改任务的执行周期
-				CronTrigger trigger = new CronTrigger(SpringDynamicCronTask.cron);
-                Date nextExec = trigger.nextExecutionTime(triggerContext);
-                return nextExec;
-			}
-		});
 		return "open";
 	}
 }
