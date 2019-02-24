@@ -103,6 +103,7 @@ public class ExcelHandler {
 		String fileName = file.getOriginalFilename();
 
 		String root = request.getSession().getServletContext().getRealPath(File.separator);
+		System.out.println(root);
 		String path = root + "\\excel\\" + fileName;
 		try {
 			file.transferTo(new File(path));
