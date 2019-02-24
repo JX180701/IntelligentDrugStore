@@ -428,6 +428,28 @@ public class RequisitionHandler
 							library.setLibrary_num("0");
 							libraryBiz.updateLibrary(library);
 
+							// Ò©·¿
+							DrugStore drugStore = new DrugStore();
+							drugStore.setDrug_id(library.getDrug_id());
+							drugStore.setBatch(library.getBatch());
+							DrugStore drugStore2 = drugStoreBiz.findDrugStoreByDrugNameAndBatch(drugStore);
+							if (drugStore2 != null)
+							{
+								drugStore2.setDrugstore_num(""+num4);
+								drugStoreBiz.updateDrugStoreNum(drugStore2);
+							} else
+							{
+								drugStore.setPurchase_id(library.getPurchase_id());
+								drugStore.setValidity(library.getValidity());
+								drugStore.setDrugstore_num("" + num4);
+								drugStore.setDrugstore_threshold(library.getLibrary_threshold());
+								drugStore.setDrugstore_state(library.getLibrary_state());
+								drugStore.setDrug(library.getDrug());
+								drugStore.setPurchase(library.getPurchase());
+
+								drugStoreBiz.addDrugStore(drugStore);
+							}
+
 							LibraryDetail libraryDetail = new LibraryDetail();
 							libraryDetail.setLibrary_id(library.getLibrary_id());
 							libraryDetail.setLibrary_detail_num("" + num4);

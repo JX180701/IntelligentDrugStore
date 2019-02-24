@@ -27,6 +27,6 @@ public class QuartzHandler {
 	public String autoExaminePass(HttpServletRequest request,String operate) throws SchedulerException, ParseException{
 		SpringDynamicCronTask.cron = "0 0/20 * * * ?";
 		
-		return "open";
+		return "close";
 	}
 }

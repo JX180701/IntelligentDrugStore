@@ -329,15 +329,5 @@
 		<result property="drugstore_threshold" column="drugstore_threshold" />
 		<result property="drugstore_state" column="drugstore_state" />
 	</resultMap>
-<<<<<<< HEAD
-=======
-	
-	<select id="findDrugStoreById"
-		resultType="org.great.entity.DrugStore">
 
-		select * from tb_drugstore where drug_id=#{id}
-		ORDER BY validity ASC
-	</select>
-
->>>>>>> 781ba1dccc7229c383ad8d5b6fc7fc98384a72a9
 </mapper>
