@@ -16,7 +16,6 @@ import javax.servlet.http.HttpSession;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.great.aop.SystemLog;
-import org.great.biz.DrugBiz;
 import org.great.biz.DrugStoreBiz;
 import org.great.biz.LibraryBiz;
 import org.great.biz.LibraryDetailBiz;
@@ -52,38 +51,36 @@ public class RequisitionHandler
 
 	@Resource
 	private DrugStoreBiz drugStoreBiz;
-	
-	@Resource
-	private DrugBiz drugbiz;
 
 	@Resource
 	private LibraryBiz libraryBiz;
-	
+
 	@Resource
 	private LibraryDetailBiz libraryDetailbiz;
-	
+
 	@Resource
 	private PriceBiz priceBiz;
-	
-	@RequestMapping(value = "/Requisition.action")
-	public String Requisition(HttpServletRequest request,HttpSession session) {
 
-		List<Drug> drugList = drugbiz.findAllDrug();
-		
-		
-		String page=request.getParameter("page");
-		session.setAttribute("drugList", drugList);
-		if(page.equals("batch")) {
+	@RequestMapping(value = "/Requisition.action")
+	public String Requisition(HttpServletRequest request)
+	{
+		// SendEmail sendEmail=new SendEmail();
+		// sendEmail.send();
+		String page = request.getParameter("page");
+		if (page.equals("batch"))
+		{
 			return "cancel";
-		}else if(page.equals("predict")){
+		} else if (page.equals("predict"))
+		{
 			return "analysis";
 		}
 		return "requisition";
 	}
-	
+
 	@SystemLog(operationType = "申请管理", operationName = "添加申请")
 	@RequestMapping(value = "/addRequisition.action")
-	public String addRequisition(HttpServletRequest request, HttpServletResponse response,Requisition requisition) {
+	public String addRequisition(HttpServletRequest request, HttpServletResponse response, Requisition requisition)
+	{
 
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute("user");
@@ -92,45 +89,52 @@ public class RequisitionHandler
 		requisition.setRequisition_date1(time);
 		requisition.setRequisition_state("待审核");
 		requisition.setUser_id(user.getUser_id());
-		
-		
+
 		// 填写申请时间
-		
-		if (requisitionBiz.takeDrug(requisition)) {
+
+		if (requisitionBiz.takeDrug(requisition))
+		{
 			response.setContentType("text/html;charset=gb2312");
 			PrintWriter out;
-			try {
+			try
+			{
 				out = response.getWriter();
 				out.println("<script>");
 				out.println("alert('成功提交申请');");
 				out.println("history.back();");
 				out.println("</script>");
 				out.flush();
-			    out.close();
-			} catch (IOException e) {
+				out.close();
+			} catch (IOException e)
+			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return "requisition";
-		} else {
+		} else
+		{
 			return result;
 		}
 	}
 
 	@RequestMapping(value = "/showRequisition.action")
-	public String showRequisition(HttpServletRequest request, Requisition requisition) {
+	public String showRequisition(HttpServletRequest request, Requisition requisition)
+	{
 		HttpSession session = request.getSession();
-		
+
 		requestList = requisitionBiz.selectRequisition(requisition);
 		session.setAttribute("requestList", requestList);
 
 		return "showRequisition";
 	}
-	
+
 	@RequestMapping(value = "/condRequisition.action")
-	public String condRequisition(HttpServletRequest request, String drug,String requisition_state,String requisition_type,String requisition_date1) {
-		
-		Requisition requisition=new Requisition(Integer.parseInt(drug), requisition_state, requisition_date1, requisition_type);
+	public String condRequisition(HttpServletRequest request, String drug, String requisition_state,
+			String requisition_type, String requisition_date1)
+	{
+
+		Requisition requisition = new Requisition(Integer.parseInt(drug), requisition_state, requisition_date1,
+				requisition_type);
 		HttpSession session = request.getSession();
 		requestList = requisitionBiz.selectRequisition(requisition);
 		session.setAttribute("requestList", requestList);
@@ -140,126 +144,145 @@ public class RequisitionHandler
 
 	@RequestMapping(value = "/deleteRequisition.action")
 	@SystemLog(operationType = "申请管理", operationName = "删除申请")
-	public void deleteRequisition(HttpServletRequest request,HttpServletResponse response,Requisition requisition) throws IOException {
+	public void deleteRequisition(HttpServletRequest request, HttpServletResponse response, Requisition requisition)
+			throws IOException
+	{
 		String requisition_id = request.getParameter("requisition_id");
 
-		if (requisitionBiz.deleteRequisition(requisition_id)) {
+		if (requisitionBiz.deleteRequisition(requisition_id))
+		{
 			response.setContentType("text/html;charset=gb2312");
 			PrintWriter out;
-			try {
+			try
+			{
 				out = response.getWriter();
 				out.println("<script>");
 				out.println("alert('删除成功')");
 				out.println("location.href = '/pharmacy/requisition/showRequisition.action';");
 				out.println("</script>");
 				out.flush();
-			    out.close();
-			} catch (IOException e) {
+				out.close();
+			} catch (IOException e)
+			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			 // 可通过String类型返回信息
-		} 
-		
+			// 可通过String类型返回信息
+		}
+
 	}
+
 	@RequestMapping(value = "/changeRequisition.action")
 	@SystemLog(operationType = "申请管理", operationName = "更改申请")
-	public void modRequisition(HttpServletRequest request,HttpServletResponse response,Requisition requisition) {
+	public void modRequisition(HttpServletRequest request, HttpServletResponse response, Requisition requisition)
+	{
 		String[] array = request.getParameter("array").split(",");
-		
-		Requisition r=new Requisition(Integer.parseInt(array[0]),Integer.parseInt(array[1]), Integer.parseInt(array[2]), array[3], array[4], array[5], array[6], array[7],array[8]);
-		
-		if (requisitionBiz.changeRequisition(r)) {
+
+		Requisition r = new Requisition(Integer.parseInt(array[0]), Integer.parseInt(array[1]),
+				Integer.parseInt(array[2]), array[3], array[4], array[5], array[6], array[7], array[8]);
+
+		if (requisitionBiz.changeRequisition(r))
+		{
 			response.setContentType("text/html;charset=gb2312");
 			PrintWriter out;
-			try {
+			try
+			{
 				out = response.getWriter();
 				out.println("<script>");
 				out.println("alert('修改成功')");
 				out.println("location.href = '/pharmacy/requisition/showRequisition.action';");
 				out.println("</script>");
 				out.flush();
-			    out.close();
-			} catch (IOException e) {
+				out.close();
+			} catch (IOException e)
+			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-		} 
+
+		}
 	}
-	
+
 	@RequestMapping(value = "/showPrice.action")
-	public ModelAndView showPrice(HttpServletRequest request) {
-		
-		List<Drug> pricelist=requisitionBiz.showPrice();
-		ModelAndView model =new ModelAndView();
-		model.addObject("pricelist",pricelist);
+	public ModelAndView showPrice(HttpServletRequest request)
+	{
+
+		List<Drug> pricelist = requisitionBiz.showPrice();
+		ModelAndView model = new ModelAndView();
+		model.addObject("pricelist", pricelist);
 		model.setViewName("changePrice");
 		return model;
-		
+
 	}
-	
+
 	@RequestMapping(value = "/condPrice.action")
 
-	public ModelAndView condPrice(HttpServletRequest request) {
+	public ModelAndView condPrice(HttpServletRequest request)
+	{
 
-		HashMap<String,Object> cond = new HashMap<String, Object>();
-		
-		String drugid=request.getParameter("drug");
-		String drugname=request.getParameter("drug_name");
-		String cost=request.getParameter("cost");
-		String retail=request.getParameter("retail");
-		
-		int id=Integer.parseInt(drugid);
+		HashMap<String, Object> cond = new HashMap<String, Object>();
+
+		String drugid = request.getParameter("drug");
+		String drugname = request.getParameter("drug_name");
+		String cost = request.getParameter("cost");
+		String retail = request.getParameter("retail");
+
+		int id = Integer.parseInt(drugid);
 		cond.put("drug_id", id);
 		cond.put("drug_name", drugname);
 		cond.put("cost", cost);
 		cond.put("retail", retail);
-		
-		List<Drug> pricelist=requisitionBiz.selectPrice(cond);
-		
-		ModelAndView model =new ModelAndView();
-		model.addObject("pricelist",pricelist);
+
+		List<Drug> pricelist = requisitionBiz.selectPrice(cond);
+
+		ModelAndView model = new ModelAndView();
+		model.addObject("pricelist", pricelist);
 		model.setViewName("changePrice");
 		return model;
-		
+
 	}
-	
+
 	@SystemLog(operationType = "价格管理", operationName = "调价")
 	@RequestMapping(value = "/changePrice.action")
-	public ModelAndView changePrice(HttpServletRequest request) {
-		ModelAndView model =new ModelAndView();
-		
-		String oldprice=request.getParameter("oldprice");
-		String newprice=request.getParameter("newprice");
-		String drug_id=request.getParameter("drug_id");
-		String price_id=request.getParameter("price_id");
+	public ModelAndView changePrice(HttpServletRequest request)
+	{
+		ModelAndView model = new ModelAndView();
+
+		String oldprice = request.getParameter("oldprice");
+		String newprice = request.getParameter("newprice");
+		String drug_id = request.getParameter("drug_id");
+		String price_id = request.getParameter("price_id");
 		String time = getTimeFormat();
-		Price p=new Price(Integer.parseInt(price_id),newprice);
+		Price p = new Price(Integer.parseInt(price_id), newprice);
 		priceBiz.updatePrice(p);
-		PriceLog pricelog=new PriceLog(Integer.parseInt(drug_id),oldprice,newprice,time,"待审核");
-	
-		if (requisitionBiz.changePrice(pricelog)) {
-			model=showPrice(request);
-			
-		} 
+		PriceLog pricelog = new PriceLog(Integer.parseInt(drug_id), oldprice, newprice, time, "待审核");
+
+		if (requisitionBiz.changePrice(pricelog))
+		{
+			model = showPrice(request);
+
+		}
 		return model;
 	}
-	
-	@RequestMapping(value = "/findDrugAjax.action", method = RequestMethod.GET,produces = {"text/html;charset=utf-8"})
+
+	@RequestMapping(value = "/findDrugAjax.action", method = RequestMethod.GET, produces =
+	{ "text/html;charset=utf-8" })
 	@ResponseBody
-	public String findDrugAjax(HttpServletRequest request, HttpServletResponse response, String name) {
-		List<Drug> drugList=requisitionBiz.ajaxPrice("%"+name+"%");
-		
-		String result="";
-		for (Drug d:drugList) {
-			result=result+d.getDrug_name1()+",";
+	public String findDrugAjax(HttpServletRequest request, HttpServletResponse response, String name)
+	{
+		List<Drug> drugList = requisitionBiz.ajaxPrice("%" + name + "%");
+
+		String result = "";
+		for (Drug d : drugList)
+		{
+			result = result + d.getDrug_name1() + ",";
 		}
-		
-		return result;	
+
+		return result;
 	}
-	
-	private String getTimeFormat() {
+
+	private String getTimeFormat()
+	{
 		Long l = System.currentTimeMillis();
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String timeString = formatter.format(l);
@@ -334,7 +357,7 @@ public class RequisitionHandler
 			map.put("date2", null);
 			map.put("id", requisition.getRequisition_id());
 			System.out.println("22");
-			List<Requisition>  requisitionn = requisitionBiz.lhFindRequest(map);
+			List<Requisition> requisitionn = requisitionBiz.lhFindRequest(map);
 			System.out.println("33");
 			// 1.申请数量是多少
 			int num1 = Integer.valueOf(requisition.getRequisition_num());
@@ -370,7 +393,7 @@ public class RequisitionHandler
 							libraryBiz.updateLibrary(library);
 							LibraryDetail libraryDetail = new LibraryDetail();
 							libraryDetail.setLibrary_id(library.getLibrary_id());
-							libraryDetail.setLibrary_detail_num(""+num1);
+							libraryDetail.setLibrary_detail_num("" + num1);
 							libraryDetail.setLibrary_detail_price(library.getDrug().getPrice().getPrice_cost());
 							libraryDetail.setLibrary_detail_date(time);
 							libraryDetail.setLibrary_detail_type("出库");
@@ -404,10 +427,10 @@ public class RequisitionHandler
 							num1 = num5;
 							library.setLibrary_num("0");
 							libraryBiz.updateLibrary(library);
-							
+
 							LibraryDetail libraryDetail = new LibraryDetail();
 							libraryDetail.setLibrary_id(library.getLibrary_id());
-							libraryDetail.setLibrary_detail_num(""+num4);
+							libraryDetail.setLibrary_detail_num("" + num4);
 							libraryDetail.setLibrary_detail_price(library.getDrug().getPrice().getPrice_cost());
 							libraryDetail.setLibrary_detail_date(time);
 							libraryDetail.setLibrary_detail_type("出库");
@@ -436,40 +459,39 @@ public class RequisitionHandler
 					out.close();
 				}
 				// 4.返回结果
-			}else if (requisitionn.get(0).getRequisition_type().equals("药品退库"))
+			} else if (requisitionn.get(0).getRequisition_type().equals("药品退库"))
 			{
 				String batch = requisitionn.get(0).getRequisition_batch();
 				int id = requisitionn.get(0).getDrug_id();
 				System.out.println(id);
 				System.out.println(batch);
-				
-				//药房库存减少
+
+				// 药房库存减少
 				DrugStore drugStore = new DrugStore();
 				drugStore.setDrug_id(id);
 				drugStore.setBatch(batch);
 				drugStore = drugStoreBiz.findDrugStoreByDrugNameAndBatch(drugStore);
 				System.out.println(drugStore);
-				drugStore.setDrugstore_num(""+(Integer.valueOf(drugStore.getDrugstore_num())-num1));
+				drugStore.setDrugstore_num("" + (Integer.valueOf(drugStore.getDrugstore_num()) - num1));
 				drugStoreBiz.updateDrugStoreNum(drugStore);
-				
-				
-				//药库库存增加
+
+				// 药库库存增加
 				Library library2 = new Library();
 				library2.setDrug_id(id);
 				library2.setBatch(batch);
 				library2 = libraryBiz.findLibraryIdByDrugNameAndBatch(library2);
 				System.out.println(library2);
-				library2.setLibrary_num(""+(num1+Integer.valueOf(library2.getLibrary_num())));
+				library2.setLibrary_num("" + (num1 + Integer.valueOf(library2.getLibrary_num())));
 				libraryBiz.updateLibrary(library2);
-				
+
 				LibraryDetail libraryDetail = new LibraryDetail();
 				libraryDetail.setLibrary_id(library2.getLibrary_id());
-				libraryDetail.setLibrary_detail_num(""+num1);
+				libraryDetail.setLibrary_detail_num("" + num1);
 				libraryDetail.setLibrary_detail_price(library2.getDrug().getPrice().getPrice_cost());
 				libraryDetail.setLibrary_detail_date(time);
 				libraryDetail.setLibrary_detail_type("入库");
 				libraryDetailbiz.addLibraryDetail(libraryDetail);
-				
+
 				//
 				requisitionBiz.updateNameTime(requisition);
 				requisition.setRequisition_state("通过");
@@ -480,32 +502,29 @@ public class RequisitionHandler
 				out.println("</script>");
 				out.flush();
 				out.close();
-				
-				
-				
-			}
-			else if (requisitionn.get(0).getRequisition_type().equals("药品报损"))
+
+			} else if (requisitionn.get(0).getRequisition_type().equals("药品报损"))
 			{
 				System.out.println(requisitionn.get(0));
 				String batch = requisitionn.get(0).getRequisition_batch();
 				int id = requisitionn.get(0).getDrug_id();
 				System.out.println(id);
 				System.out.println(batch);
-				
-				//药房库存减少
+
+				// 药房库存减少
 				DrugStore drugStore = new DrugStore();
 				drugStore.setDrug_id(id);
 				drugStore.setBatch(batch);
 				drugStore = drugStoreBiz.findDrugStoreByDrugNameAndBatch(drugStore);
 				System.out.println(drugStore);
-				drugStore.setDrugstore_num(""+(Integer.valueOf(drugStore.getDrugstore_num())-num1));
-				
+				drugStore.setDrugstore_num("" + (Integer.valueOf(drugStore.getDrugstore_num()) - num1));
+
 				System.out.println(requisition);
 				requisitionBiz.updateNameTime(requisition);
 				requisition.setRequisition_state("通过");
 				System.out.println("-----");
 				requisitionBiz.updateState(requisition);
-				
+
 				out.println("<script>");
 				out.println("alert('操作成功！');");
 				out.println("location.href ='/pharmacy/requisition/lhFindRequest.action';");

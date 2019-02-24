@@ -81,7 +81,7 @@ h2{text-align:center}
 		
 		function confirm(){
 			var temp=$("#caution").html()
-			alert(temp)
+			
 			var input=$("#textfield3").val()
 			if(temp!=""&&input!=""){			
 			    var oldnum=parseInt(input)
