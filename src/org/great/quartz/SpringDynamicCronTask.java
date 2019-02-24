@@ -31,45 +31,28 @@ public class SpringDynamicCronTask implements SchedulingConfigurer {
 	private static final Logger logger = LoggerFactory.getLogger(SpringDynamicCronTask.class);
 	
 	public static String cron;
-
+	public static ScheduledTaskRegistrar taskRegistrar;
+	
 	public SpringDynamicCronTask() {
-		cron = "0/5 * * * * ?";
-		
-		// 开启新线程模拟外部更改了任务执行周期
-		/*new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(15 * 1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				
-				cron = "0/10 * * * * ?";
-				System.err.println("cron change to: " + cron);
-			}
-		}).start();*/
+		cron = "0/10 * * * * ?";
+//		new Thread(new Runnable() {
+//			@Override
+//			public void run() {
+//				try {
+//					Thread.sleep(15 * 1000);
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//				cron = "0 0/20 * * * ?";
+//				System.err.println("cron change to: " + cron);
+//			}
+//		}).start();
 	}
  
 	@Override
 	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-		
 		System.out.println("yes or no");
-		taskRegistrar.addTriggerTask(new Runnable() {
-			@Override
-			public void run() {
-				// 任务逻辑
-				logger.debug("dynamicCronTask is running...");
-				libraryQuartz.overdue();
-			}
-		}, new Trigger() {
-			@Override
-			public Date nextExecutionTime(TriggerContext triggerContext) {
-				// 任务触发，可修改任务的执行周期
-				CronTrigger trigger = new CronTrigger(cron);
-                Date nextExec = trigger.nextExecutionTime(triggerContext);
-                return nextExec;
-			}
-		});
+		this.taskRegistrar = taskRegistrar;
+		
 	}
 }
